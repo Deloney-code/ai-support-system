@@ -110,3 +110,5 @@ SECURE_HSTS_PRELOAD = not DEBUG
 # -------------------------------------------------------
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'ul', 'li', 'br', 'strong', 'em']
 BLEACH_ALLOWED_ATTRIBUTES = {}  # No attributes allowed — prevents event handler injection
+# Custom user model
+AUTH_USER_MODEL = 'accounts.User'
