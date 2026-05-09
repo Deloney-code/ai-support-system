@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Your apps
+    'django_celery_results',
     'accounts',
     'tickets',
 ]
@@ -112,3 +112,12 @@ BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'ul', 'li', 'br', 'strong', 'em']
 BLEACH_ALLOWED_ATTRIBUTES = {}  # No attributes allowed — prevents event handler injection
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
+
+#celerysettings
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'

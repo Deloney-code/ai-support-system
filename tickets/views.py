@@ -2,30 +2,20 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
+from django.http import JsonResponse
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 from . import ai_service
 
+
 def check_ticket_owner_or_agent(user, ticket):
-    """
-    Central permission check — called before every ticket operation.
-    Prevents horizontal privilege escalation (user A accessing user B's ticket).
-    Raises PermissionDenied which Django maps to a 403 response.
-    """
     if not (ticket.owner == user or user.is_agent()):
         raise PermissionDenied
 
 
 @login_required
 def dashboard(request):
-    """
-    Customers see only their own tickets.
-    Agents see all tickets.
-    The ORM filter makes this safe — no raw SQL, no injection risk.
-    """
     if request.user.is_agent():
         tickets = Ticket.objects.select_related('owner', 'assigned_to').all()
     else:
@@ -48,8 +38,18 @@ def ticket_create(request):
     if request.method == 'POST':
         if form.is_valid():
             ticket = form.save(commit=False)
-            ticket.owner = request.user  # Force owner to current user
+            ticket.owner = request.user
             ticket.save()
+
+            from .tasks import (
+                send_ticket_confirmation_email,
+                auto_resolve_ticket,
+                classify_new_ticket
+            )
+            send_ticket_confirmation_email.delay(ticket.pk)
+            auto_resolve_ticket.delay(ticket.pk)
+            classify_new_ticket.delay(ticket.pk)
+
             messages.success(request, "Ticket created successfully.")
             return redirect('tickets:ticket_detail', pk=ticket.pk)
         else:
@@ -91,7 +91,6 @@ def ticket_edit(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
     check_ticket_owner_or_agent(request.user, ticket)
 
-    # Only allow editing open tickets
     if ticket.status not in ['open', 'in_progress']:
         messages.error(request, "Resolved or closed tickets cannot be edited.")
         return redirect('tickets:ticket_detail', pk=pk)
@@ -114,14 +113,8 @@ def ticket_edit(request, pk):
 @login_required
 @require_http_methods(["POST"])
 def ticket_close(request, pk):
-    """
-    Close accepts POST only — same reason as logout.
-    A GET request to close a ticket could be triggered
-    by a malicious link in an email.
-    """
     ticket = get_object_or_404(Ticket, pk=pk)
     check_ticket_owner_or_agent(request.user, ticket)
-
     ticket.status = 'closed'
     ticket.save()
     messages.success(request, "Ticket closed.")
@@ -131,10 +124,6 @@ def ticket_close(request, pk):
 @login_required
 @require_http_methods(["POST"])
 def ticket_status_update(request, pk):
-    """
-    Agents only — update status, priority, assignment.
-    Returns 403 immediately if a customer tries this.
-    """
     if not request.user.is_agent():
         raise PermissionDenied
 
@@ -148,10 +137,11 @@ def ticket_status_update(request, pk):
         messages.error(request, "Invalid status update.")
 
     return redirect('tickets:ticket_detail', pk=pk)
+
+
 @login_required
 @require_POST
 def ai_polish_reply(request, pk):
-    """Agents only — polish a draft reply with AI."""
     if not request.user.is_agent():
         raise PermissionDenied
 
@@ -168,14 +158,13 @@ def ai_polish_reply(request, pk):
             ticket.description
         )
         return JsonResponse({'polished_reply': polished})
-    except Exception as e:
+    except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
 
 
 @login_required
 @require_POST
 def ai_summarize(request, pk):
-    """Summarize a ticket thread — available to agents and ticket owner."""
     ticket = get_object_or_404(Ticket, pk=pk)
     check_ticket_owner_or_agent(request.user, ticket)
 
@@ -194,14 +183,13 @@ def ai_summarize(request, pk):
             comment_list
         )
         return JsonResponse({'summary': summary})
-    except Exception as e:
+    except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
 
 
 @login_required
 @require_POST
 def ai_classify(request, pk):
-    """Agents only — classify ticket category and priority."""
     if not request.user.is_agent():
         raise PermissionDenied
 
@@ -213,14 +201,13 @@ def ai_classify(request, pk):
             ticket.description
         )
         return JsonResponse(classification)
-    except Exception as e:
+    except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
 
 
 @login_required
 @require_POST
 def ai_auto_resolve(request, pk):
-    """Agents only — check if ticket can be auto-resolved."""
     if not request.user.is_agent():
         raise PermissionDenied
 
@@ -232,6 +219,5 @@ def ai_auto_resolve(request, pk):
             ticket.description
         )
         return JsonResponse(result)
-    except Exception as e:
+    except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
-# Create your views here.
