@@ -5,7 +5,9 @@ from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_http_methods
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from . import ai_service
 
 def check_ticket_owner_or_agent(user, ticket):
     """
@@ -146,5 +148,90 @@ def ticket_status_update(request, pk):
         messages.error(request, "Invalid status update.")
 
     return redirect('tickets:ticket_detail', pk=pk)
+@login_required
+@require_POST
+def ai_polish_reply(request, pk):
+    """Agents only — polish a draft reply with AI."""
+    if not request.user.is_agent():
+        raise PermissionDenied
 
+    ticket = get_object_or_404(Ticket, pk=pk)
+    rough_reply = request.POST.get('rough_reply', '').strip()
+
+    if not rough_reply:
+        return JsonResponse({'error': 'No reply text provided.'}, status=400)
+
+    try:
+        polished = ai_service.polish_reply(
+            rough_reply,
+            ticket.title,
+            ticket.description
+        )
+        return JsonResponse({'polished_reply': polished})
+    except Exception as e:
+        return JsonResponse({'error': 'AI service unavailable.'}, status=503)
+
+
+@login_required
+@require_POST
+def ai_summarize(request, pk):
+    """Summarize a ticket thread — available to agents and ticket owner."""
+    ticket = get_object_or_404(Ticket, pk=pk)
+    check_ticket_owner_or_agent(request.user, ticket)
+
+    comments = list(ticket.comments.select_related('author').values(
+        'author__username', 'body'
+    ))
+    comment_list = [
+        {'author': c['author__username'], 'body': c['body']}
+        for c in comments
+    ]
+
+    try:
+        summary = ai_service.summarize_ticket(
+            ticket.title,
+            ticket.description,
+            comment_list
+        )
+        return JsonResponse({'summary': summary})
+    except Exception as e:
+        return JsonResponse({'error': 'AI service unavailable.'}, status=503)
+
+
+@login_required
+@require_POST
+def ai_classify(request, pk):
+    """Agents only — classify ticket category and priority."""
+    if not request.user.is_agent():
+        raise PermissionDenied
+
+    ticket = get_object_or_404(Ticket, pk=pk)
+
+    try:
+        classification = ai_service.classify_ticket(
+            ticket.title,
+            ticket.description
+        )
+        return JsonResponse(classification)
+    except Exception as e:
+        return JsonResponse({'error': 'AI service unavailable.'}, status=503)
+
+
+@login_required
+@require_POST
+def ai_auto_resolve(request, pk):
+    """Agents only — check if ticket can be auto-resolved."""
+    if not request.user.is_agent():
+        raise PermissionDenied
+
+    ticket = get_object_or_404(Ticket, pk=pk)
+
+    try:
+        result = ai_service.auto_resolve_check(
+            ticket.title,
+            ticket.description
+        )
+        return JsonResponse(result)
+    except Exception as e:
+        return JsonResponse({'error': 'AI service unavailable.'}, status=503)
 # Create your views here.

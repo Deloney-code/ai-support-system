@@ -21,6 +21,119 @@
     <p>{{ ticket.description }}</p>
 </div>
 
+<!-- AI Tools -->
+<div class="ai-tools">
+    <h2>AI Tools</h2>
+
+    <!-- Summarize — visible to owner and agents -->
+    <button onclick="aiSummarize()">Summarize Ticket</button>
+    <div id="ai-summary" style="display:none">
+        <h3>Summary</h3>
+        <p id="summary-text"></p>
+    </div>
+
+    {% if user.is_agent %}
+    <!-- Classify — agents only -->
+    <button onclick="aiClassify()">Classify Ticket</button>
+    <div id="ai-classification" style="display:none">
+        <p>Suggested category: <strong id="class-category"></strong></p>
+        <p>Suggested priority: <strong id="class-priority"></strong></p>
+    </div>
+
+    <!-- Auto-resolve — agents only -->
+    <button onclick="aiAutoResolve()">Check Auto-Resolve</button>
+    <div id="ai-autoresolve" style="display:none">
+        <p id="autoresolve-result"></p>
+    </div>
+
+    <!-- Polish reply — agents only -->
+    <div class="polish-section">
+        <h3>Polish a Reply</h3>
+        <textarea id="rough-reply" rows="4" placeholder="Type your rough reply here..."></textarea>
+        <button onclick="aiPolish()">Polish with AI</button>
+        <div id="polished-result" style="display:none">
+            <h4>Polished reply:</h4>
+            <p id="polished-text"></p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    const csrfToken = '{{ csrf_token }}';
+    const ticketPk = '{{ ticket.pk }}';
+
+    async function aiPost(endpoint)
+    {
+        const body = endpoint === 'polish'
+            ? new URLSearchParams({ rough_reply: document.getElementById('rough-reply').value })
+            : new URLSearchParams();
+
+        body.append('csrfmiddlewaretoken', csrfToken);
+
+        const res = await fetch(`/tickets/${ticketPk}/ai/${endpoint}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: body
+        });
+        return res.json();
+    }
+
+    async function aiSummarize()
+    {
+        const data = await aiPost('summarize');
+        if (data.summary)
+        {
+            document.getElementById('summary-text').textContent = data.summary;
+            document.getElementById('ai-summary').style.display = 'block';
+        } else
+        {
+            alert('Could not summarize ticket.');
+        }
+    }
+
+    async function aiClassify()
+    {
+        const data = await aiPost('classify');
+        if (data.category)
+        {
+            document.getElementById('class-category').textContent = data.category;
+            document.getElementById('class-priority').textContent = data.priority;
+            document.getElementById('ai-classification').style.display = 'block';
+        } else
+        {
+            alert('Could not classify ticket.');
+        }
+    }
+
+    async function aiAutoResolve()
+    {
+        const data = await aiPost('auto-resolve');
+        const el = document.getElementById('autoresolve-result');
+        if (data.can_resolve)
+        {
+            el.textContent = 'Suggested resolution: ' + data.suggested_reply;
+        } else
+        {
+            el.textContent = 'This ticket requires manual handling.';
+        }
+        document.getElementById('ai-autoresolve').style.display = 'block';
+    }
+
+    async function aiPolish()
+    {
+        const data = await aiPost('polish');
+        if (data.polished_reply)
+        {
+            document.getElementById('polished-text').textContent = data.polished_reply;
+            document.getElementById('polished-result').style.display = 'block';
+        } else
+        {
+            alert('Could not polish reply.');
+        }
+    }
+</script>
+
 <!-- Agent controls -->
 {% if user.is_agent %}
 <div class="agent-controls">
