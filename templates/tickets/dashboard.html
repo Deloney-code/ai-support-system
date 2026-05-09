@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1>Support Tickets</h1>
+
+<div class="stats">
+    <span>Open: {{ open_count }}</span>
+    <span>In Progress: {{ in_progress_count }}</span>
+    <span>Resolved: {{ resolved_count }}</span>
+</div>
+
+<a href="{% url 'tickets:ticket_create' %}">+ New Ticket</a>
+
+{% if tickets %}
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Category</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.pk }}</td>
+            <td>
+                <a href="{% url 'tickets:ticket_detail' ticket.pk %}">
+                    {{ ticket.title }}
+                </a>
+            </td>
+            <td>{{ ticket.get_status_display }}</td>
+            <td>{{ ticket.get_priority_display }}</td>
+            <td>{{ ticket.get_category_display }}</td>
+            <td>{{ ticket.created_at|date:"M d, Y" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No tickets yet. <a href="{% url 'tickets:ticket_create' %}">Create your first one.</a></p>
+{% endif %}
+{% endblock %}

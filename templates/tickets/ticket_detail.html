@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket #{{ ticket.pk }}{% endblock %}
+
+{% block content %}
+<h1>{{ ticket.title }}</h1>
+
+<div class="ticket-meta">
+    <span>Status: {{ ticket.get_status_display }}</span>
+    <span>Priority: {{ ticket.get_priority_display }}</span>
+    <span>Category: {{ ticket.get_category_display }}</span>
+    <span>Created: {{ ticket.created_at|date:"M d, Y H:i" }}</span>
+    <span>Owner: {{ ticket.owner.username }}</span>
+    {% if ticket.assigned_to %}
+    <span>Assigned to: {{ ticket.assigned_to.username }}</span>
+    {% endif %}
+</div>
+
+<div class="ticket-description">
+    <h2>Description</h2>
+    <p>{{ ticket.description }}</p>
+</div>
+
+<!-- Agent controls -->
+{% if user.is_agent %}
+<div class="agent-controls">
+    <h2>Update Status</h2>
+    <form method="POST" action="{% url 'tickets:ticket_status_update' ticket.pk %}">
+        {% csrf_token %}
+        {{ status_form.as_p }}
+        <button type="submit">Update</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- Owner controls -->
+{% if ticket.owner == user and ticket.status in 'open,in_progress' %}
+<a href="{% url 'tickets:ticket_edit' ticket.pk %}">Edit Ticket</a>
+
+<form method="POST" action="{% url 'tickets:ticket_close' ticket.pk %}" style="display:inline">
+    {% csrf_token %}
+    <button type="submit" onclick="return confirm('Close this ticket?')">
+        Close Ticket
+    </button>
+</form>
+{% endif %}
+
+<!-- Comments -->
+<div class="comments">
+    <h2>Comments</h2>
+
+    {% for comment in comments %}
+    <div class="comment">
+        <strong>{{ comment.author.username }}</strong>
+        <span>{{ comment.created_at|date:"M d, Y H:i" }}</span>
+        <p>{{ comment.body }}</p>
+    </div>
+    {% empty %}
+    <p>No comments yet.</p>
+    {% endfor %}
+
+    <h3>Add a comment</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+</div>
+{% endblock %}

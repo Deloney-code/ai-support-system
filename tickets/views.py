@@ -1,3 +1,150 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_http_methods
+from .models import Ticket, TicketComment
+from .forms import TicketForm, TicketCommentForm, TicketStatusForm
+
+
+def check_ticket_owner_or_agent(user, ticket):
+    """
+    Central permission check — called before every ticket operation.
+    Prevents horizontal privilege escalation (user A accessing user B's ticket).
+    Raises PermissionDenied which Django maps to a 403 response.
+    """
+    if not (ticket.owner == user or user.is_agent()):
+        raise PermissionDenied
+
+
+@login_required
+def dashboard(request):
+    """
+    Customers see only their own tickets.
+    Agents see all tickets.
+    The ORM filter makes this safe — no raw SQL, no injection risk.
+    """
+    if request.user.is_agent():
+        tickets = Ticket.objects.select_related('owner', 'assigned_to').all()
+    else:
+        tickets = Ticket.objects.filter(owner=request.user)
+
+    context = {
+        'tickets': tickets,
+        'open_count': tickets.filter(status='open').count(),
+        'in_progress_count': tickets.filter(status='in_progress').count(),
+        'resolved_count': tickets.filter(status='resolved').count(),
+    }
+    return render(request, 'tickets/dashboard.html', context)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def ticket_create(request):
+    form = TicketForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.owner = request.user  # Force owner to current user
+            ticket.save()
+            messages.success(request, "Ticket created successfully.")
+            return redirect('tickets:ticket_detail', pk=ticket.pk)
+        else:
+            messages.error(request, "Please correct the errors below.")
+
+    return render(request, 'tickets/ticket_form.html', {
+        'form': form,
+        'action': 'Create'
+    })
+
+
+@login_required
+def ticket_detail(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk)
+    check_ticket_owner_or_agent(request.user, ticket)
+
+    comment_form = TicketCommentForm(request.POST or None)
+    status_form = TicketStatusForm(instance=ticket) if request.user.is_agent() else None
+
+    if request.method == 'POST' and comment_form.is_valid():
+        comment = comment_form.save(commit=False)
+        comment.ticket = ticket
+        comment.author = request.user
+        comment.save()
+        messages.success(request, "Comment added.")
+        return redirect('tickets:ticket_detail', pk=pk)
+
+    return render(request, 'tickets/ticket_detail.html', {
+        'ticket': ticket,
+        'comment_form': comment_form,
+        'status_form': status_form,
+        'comments': ticket.comments.select_related('author').all(),
+    })
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def ticket_edit(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk)
+    check_ticket_owner_or_agent(request.user, ticket)
+
+    # Only allow editing open tickets
+    if ticket.status not in ['open', 'in_progress']:
+        messages.error(request, "Resolved or closed tickets cannot be edited.")
+        return redirect('tickets:ticket_detail', pk=pk)
+
+    form = TicketForm(request.POST or None, instance=ticket)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Ticket updated.")
+            return redirect('tickets:ticket_detail', pk=pk)
+
+    return render(request, 'tickets/ticket_form.html', {
+        'form': form,
+        'action': 'Edit',
+        'ticket': ticket
+    })
+
+
+@login_required
+@require_http_methods(["POST"])
+def ticket_close(request, pk):
+    """
+    Close accepts POST only — same reason as logout.
+    A GET request to close a ticket could be triggered
+    by a malicious link in an email.
+    """
+    ticket = get_object_or_404(Ticket, pk=pk)
+    check_ticket_owner_or_agent(request.user, ticket)
+
+    ticket.status = 'closed'
+    ticket.save()
+    messages.success(request, "Ticket closed.")
+    return redirect('tickets:dashboard')
+
+
+@login_required
+@require_http_methods(["POST"])
+def ticket_status_update(request, pk):
+    """
+    Agents only — update status, priority, assignment.
+    Returns 403 immediately if a customer tries this.
+    """
+    if not request.user.is_agent():
+        raise PermissionDenied
+
+    ticket = get_object_or_404(Ticket, pk=pk)
+    form = TicketStatusForm(request.POST, instance=ticket)
+
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Ticket status updated.")
+    else:
+        messages.error(request, "Invalid status update.")
+
+    return redirect('tickets:ticket_detail', pk=pk)
 
 # Create your views here.

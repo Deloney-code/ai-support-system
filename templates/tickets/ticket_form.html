@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Ticket{% endblock %}
+
+{% block content %}
+<h1>{{ action }} Ticket</h1>
+
+<form method="POST" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">{{ action }} Ticket</button>
+  <a href="{% url 'tickets:dashboard' %}">Cancel</a>
+</form>
+{% endblock %}
