@@ -26,5 +26,7 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run with Daphne for WebSocket support
-CMD daphne -b 0.0.0.0 -p $PORT core.asgi:application
+# Startup script
+COPY start.sh .
+RUN chmod +x start.sh
+CMD ["./start.sh"]
