@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
 from . import ai_service
+from .broadcasts import broadcast_new_ticket, broadcast_ticket_update
 
 
 def check_ticket_owner_or_agent(user, ticket):
