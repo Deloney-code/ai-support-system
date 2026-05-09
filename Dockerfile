@@ -20,6 +20,4 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-RUN sed -i 's/\r$//' /app/start.sh && chmod +x /app/start.sh
-
-ENTRYPOINT ["/app/start.sh"]
+ENTRYPOINT ["python", "/app/start.py"]
