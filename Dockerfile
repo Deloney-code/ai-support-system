@@ -27,4 +27,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Run with Daphne for WebSocket support
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "core.asgi:application"]
+CMD daphne -b 0.0.0.0 -p $PORT core.asgi:application
