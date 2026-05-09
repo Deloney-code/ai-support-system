@@ -20,5 +20,6 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["daphne -b 0.0.0.0 -p $PORT core.asgi:application"]
+RUN sed -i 's/\r$//' /app/start.sh && chmod +x /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]
