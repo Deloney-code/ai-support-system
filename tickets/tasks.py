@@ -70,6 +70,8 @@ def auto_resolve_ticket(self, ticket_id):
 
             ticket.status = 'resolved'
             ticket.save()
+            from .broadcasts import broadcast_ticket_update
+            broadcast_ticket_update(ticket)
 
             logger.info(f"Ticket #{ticket_id} auto-resolved by AI")
             send_ticket_resolution_email.delay(ticket_id)

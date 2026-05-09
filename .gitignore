@@ -1,5 +1,6 @@
 # .gitignore
 venv/
+venv_wsl/
 .env
 __pycache__/
 *.pyc

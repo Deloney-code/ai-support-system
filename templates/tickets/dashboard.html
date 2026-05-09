@@ -6,15 +6,18 @@
 <h1>Support Tickets</h1>
 
 <div class="stats">
-    <span>Open: {{ open_count }}</span>
-    <span>In Progress: {{ in_progress_count }}</span>
-    <span>Resolved: {{ resolved_count }}</span>
+    <span>Open: <strong id="open-count">{{ open_count }}</strong></span>
+    <span>In Progress: <strong id="inprogress-count">{{ in_progress_count }}</strong></span>
+    <span>Resolved: <strong id="resolved-count">{{ resolved_count }}</strong></span>
+</div>
+
+<div id="connection-status" style="display:none;color:green">
+    ● Live updates active
 </div>
 
 <a href="{% url 'tickets:ticket_create' %}">+ New Ticket</a>
 
-{% if tickets %}
-<table>
+<table id="ticket-table">
     <thead>
         <tr>
             <th>#</th>
@@ -22,27 +25,108 @@
             <th>Status</th>
             <th>Priority</th>
             <th>Category</th>
-            <th>Created</th>
+            <th>Owner</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="ticket-body">
         {% for ticket in tickets %}
-        <tr>
+        <tr id="ticket-row-{{ ticket.pk }}">
             <td>{{ ticket.pk }}</td>
             <td>
                 <a href="{% url 'tickets:ticket_detail' ticket.pk %}">
                     {{ ticket.title }}
                 </a>
             </td>
-            <td>{{ ticket.get_status_display }}</td>
-            <td>{{ ticket.get_priority_display }}</td>
+            <td id="status-{{ ticket.pk }}">{{ ticket.get_status_display }}</td>
+            <td id="priority-{{ ticket.pk }}">{{ ticket.get_priority_display }}</td>
             <td>{{ ticket.get_category_display }}</td>
-            <td>{{ ticket.created_at|date:"M d, Y" }}</td>
+            <td>{{ ticket.owner.username }}</td>
+        </tr>
+        {% empty %}
+        <tr id="empty-row">
+            <td colspan="6">No tickets yet.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% else %}
-<p>No tickets yet. <a href="{% url 'tickets:ticket_create' %}">Create your first one.</a></p>
+
+{% if user.is_agent %}
+<script>
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = wsProtocol + '//' + window.location.host + '/ws/dashboard/';
+    let socket = null;
+    let reconnectInterval = null;
+
+    function connect()
+    {
+        socket = new WebSocket(wsUrl);
+
+        socket.onopen = function ()
+        {
+            document.getElementById('connection-status').style.display = 'block';
+            if (reconnectInterval)
+            {
+                clearInterval(reconnectInterval);
+                reconnectInterval = null;
+            }
+        };
+
+        socket.onclose = function ()
+        {
+            document.getElementById('connection-status').style.display = 'none';
+            // Auto-reconnect every 5 seconds
+            if (!reconnectInterval)
+            {
+                reconnectInterval = setInterval(connect, 5000);
+            }
+        };
+
+        socket.onmessage = function (e)
+        {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'ticket_new')
+            {
+                addTicketRow(data);
+            } else if (data.type === 'ticket_update')
+            {
+                updateTicketRow(data);
+            }
+        };
+    }
+
+    function addTicketRow(data)
+    {
+        // Remove empty row if present
+        const emptyRow = document.getElementById('empty-row');
+        if (emptyRow) emptyRow.remove();
+
+        // Check if row already exists
+        if (document.getElementById('ticket-row-' + data.ticket_id)) return;
+
+        const tbody = document.getElementById('ticket-body');
+        const row = document.createElement('tr');
+        row.id = 'ticket-row-' + data.ticket_id;
+        row.innerHTML = `
+    <td>${data.ticket_id}</td>
+    <td><a href="/tickets/${data.ticket_id}/">${data.title}</a></td>
+    <td id="status-${data.ticket_id}">${data.status}</td>
+    <td id="priority-${data.ticket_id}">${data.priority}</td>
+    <td>${data.category}</td>
+    <td>${data.owner}</td>
+  `;
+        tbody.insertBefore(row, tbody.firstChild);
+    }
+
+    function updateTicketRow(data)
+    {
+        const statusEl = document.getElementById('status-' + data.ticket_id);
+        const priorityEl = document.getElementById('priority-' + data.ticket_id);
+        if (statusEl) statusEl.textContent = data.status;
+        if (priorityEl) priorityEl.textContent = data.priority;
+    }
+
+    connect();
+</script>
 {% endif %}
 {% endblock %}

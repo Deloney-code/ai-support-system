@@ -41,6 +41,7 @@ def ticket_create(request):
             ticket = form.save(commit=False)
             ticket.owner = request.user
             ticket.save()
+            broadcast_new_ticket(ticket)
 
             from .tasks import (
                 send_ticket_confirmation_email,
@@ -132,7 +133,8 @@ def ticket_status_update(request, pk):
     form = TicketStatusForm(request.POST, instance=ticket)
 
     if form.is_valid():
-        form.save()
+        updated_ticket = form.save()
+        broadcast_ticket_update(updated_ticket)
         messages.success(request, "Ticket status updated.")
     else:
         messages.error(request, "Invalid status update.")
