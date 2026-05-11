@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <!-- Page Header -->
+        <div class="d-flex align-items-center mb-4">
+            <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h2 class="mb-0"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h2>
+                <p class="text-muted mb-0">Your account information</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Profile Card -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm text-center">
+                    <div class="card-body p-4">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center 
+                            justify-content-center mb-3" style="width:80px;height:80px;font-size:2rem;font-weight:700">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                        <p class="text-muted small mb-2">@{{ user.username }}</p>
+                        <span class="badge 
+                            {% if user.is_superuser %}bg-danger
+                            {% elif user.is_staff %}bg-warning text-dark
+                            {% elif user.role == 'agent' %}bg-info
+                            {% else %}bg-success{% endif %} mb-3">
+                            {% if user.is_superuser %}Admin
+                            {% elif user.role == 'agent' %}Agent
+                            {% else %}Customer{% endif %}
+                        </span>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar me-1"></i>
+                            Joined {{ user.date_joined|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Details Card -->
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle me-2 text-primary"></i>Account Details
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">Username</small>
+                                <span>{{ user.username }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">Email</small>
+                                <span>{{ user.email|default:"Not provided" }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">First Name</small>
+                                <span>{{ user.first_name|default:"Not provided" }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">Last Name</small>
+                                <span>{{ user.last_name|default:"Not provided" }}</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">Account Status</small>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block fw-semibold">Last Login</small>
+                                <span>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bar-chart me-2 text-primary"></i>My Ticket Stats
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3 text-center">
+                            <div class="col-4">
+                                <div class="bg-success bg-opacity-10 rounded p-3">
+                                    <div class="fs-4 fw-bold text-success">
+                                        {{ user.ticket_set.count }}
+                                    </div>
+                                    <small class="text-muted">Total Tickets</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-warning bg-opacity-10 rounded p-3">
+                                    <div class="fs-4 fw-bold text-warning">
+                                        {{ user.ticket_set.filter.count }}
+                                    </div>
+                                    <small class="text-muted">Open</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-info bg-opacity-10 rounded p-3">
+                                    <div class="fs-4 fw-bold text-info">
+                                        {{ user.ticket_set.all|length }}
+                                    </div>
+                                    <small class="text-muted">Resolved</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
