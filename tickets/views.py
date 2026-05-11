@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.views.decorators.http import require_http_methods, require_POST
 from django.http import JsonResponse
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
 from . import ai_service
 from .broadcasts import broadcast_new_ticket, broadcast_ticket_update
+from .tasks import process_inbound_email
 
 
 def check_ticket_owner_or_agent(user, ticket):

@@ -128,7 +128,7 @@ def classify_new_ticket(ticket_id):
     except Exception as exc:
         logger.error(f"Classification failed for ticket #{ticket_id}: {exc}")
 
-        @shared_task(bind=True, max_retries=3)
+@shared_task(bind=True, max_retries=3)
 def process_inbound_email(self, inbound_email_id):
     """
     Processes an inbound email from Mailgun:
