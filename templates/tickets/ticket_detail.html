@@ -34,7 +34,7 @@
 
 <div class="row g-4">
 
-    <!-- Left Column — Ticket Details -->
+    <!-- Left Column -->
     <div class="col-lg-8">
 
         <!-- Ticket Info Card -->
@@ -120,7 +120,7 @@
                 {% empty %}
                 <div class="text-center py-4 text-muted">
                     <i class="bi bi-chat-dots display-4 d-block mb-2"></i>
-                    No comments yet. Be the first to comment.
+                    <p class="mb-0">No comments yet. Be the first to comment.</p>
                 </div>
                 {% endfor %}
 
@@ -150,7 +150,7 @@
 
     </div>
 
-    <!-- Right Column — AI Tools & Agent Controls -->
+    <!-- Right Column -->
     <div class="col-lg-4">
 
         <!-- AI Tools Card -->
@@ -161,7 +161,7 @@
             <div class="card-body p-3">
 
                 <!-- Summarize -->
-                <button onclick="aiSummarize()" class="btn btn-outline-primary w-100 mb-2">
+                <button onclick="aiSummarize(this)" class="btn btn-outline-primary w-100 mb-2">
                     <i class="bi bi-file-text me-2"></i>Summarize Ticket
                 </button>
                 <div id="ai-summary" class="alert alert-info d-none mb-3">
@@ -171,7 +171,7 @@
 
                 {% if user.is_agent %}
                 <!-- Classify -->
-                <button onclick="aiClassify()" class="btn btn-outline-secondary w-100 mb-2">
+                <button onclick="aiClassify(this)" class="btn btn-outline-secondary w-100 mb-2">
                     <i class="bi bi-tags me-2"></i>Classify Ticket
                 </button>
                 <div id="ai-classification" class="alert alert-secondary d-none mb-3">
@@ -181,7 +181,7 @@
                 </div>
 
                 <!-- Auto Resolve -->
-                <button onclick="aiAutoResolve()" class="btn btn-outline-success w-100 mb-2">
+                <button onclick="aiAutoResolve(this)" class="btn btn-outline-success w-100 mb-2">
                     <i class="bi bi-magic me-2"></i>Check Auto-Resolve
                 </button>
                 <div id="ai-autoresolve" class="alert alert-success d-none mb-3">
@@ -191,10 +191,12 @@
 
                 <!-- Polish Reply -->
                 <hr>
-                <h6 class="fw-semibold mb-2"><i class="bi bi-stars me-1"></i>Polish a Reply</h6>
+                <h6 class="fw-semibold mb-2">
+                    <i class="bi bi-stars me-1"></i>Polish a Reply
+                </h6>
                 <textarea id="rough-reply" class="form-control mb-2" rows="3"
                     placeholder="Type your rough reply here..."></textarea>
-                <button onclick="aiPolish()" class="btn btn-outline-warning w-100 mb-2">
+                <button onclick="aiPolish(this)" class="btn btn-outline-warning w-100 mb-2">
                     <i class="bi bi-stars me-2"></i>Polish with AI
                 </button>
                 <div id="polished-result" class="alert alert-warning d-none">
@@ -216,19 +218,8 @@
                 <h6 class="fw-semibold mb-3">Update Status</h6>
                 <form method="POST" action="{% url 'tickets:ticket_status_update' ticket.pk %}">
                     {% csrf_token %}
-                    {% for field in status_form %}
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ field.label }}</label>
-                        <select name="{{ field.html_name }}" class="form-select">
-                            {% for choice_value, choice_label in field.field.choices %}
-                            <option value="{{ choice_value }}" {% if field.value==choice_value %}selected{% endif %}>
-                                {{ choice_label }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary w-100">
+                    {{ status_form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100 mt-2">
                         <i class="bi bi-check-circle me-2"></i>Update Status
                     </button>
                 </form>
@@ -251,7 +242,6 @@
             body.append('rough_reply', document.getElementById('rough-reply').value);
         }
         body.append('csrfmiddlewaretoken', csrfToken);
-
         const res = await fetch(`/tickets/${ticketPk}/ai/${endpoint}/`, {
             method: 'POST',
             headers: { 'X-CSRFToken': csrfToken },
@@ -260,9 +250,8 @@
         return res.json();
     }
 
-    async function aiSummarize()
+    async function aiSummarize(btn)
     {
-        const btn = event.target;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Summarizing...';
         const data = await aiPost('summarize');
@@ -278,9 +267,8 @@
         }
     }
 
-    async function aiClassify()
+    async function aiClassify(btn)
     {
-        const btn = event.target;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Classifying...';
         const data = await aiPost('classify');
@@ -297,9 +285,8 @@
         }
     }
 
-    async function aiAutoResolve()
+    async function aiAutoResolve(btn)
     {
-        const btn = event.target;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Checking...';
         const data = await aiPost('auto-resolve');
@@ -316,9 +303,8 @@
         document.getElementById('ai-autoresolve').classList.remove('d-none');
     }
 
-    async function aiPolish()
+    async function aiPolish(btn)
     {
-        const btn = event.target;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Polishing...';
         const data = await aiPost('polish');
