@@ -92,4 +92,21 @@ class TicketComment(models.Model):
     def __str__(self):
         return f"Comment by {self.author.username} on Ticket #{self.ticket.id}"
 
+class InboundEmail(models.Model):
+    """Tracks emails received from customers via Mailgun webhook."""
+    sender = models.EmailField()
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='inbound_emails'
+    )
+    received_at = models.DateTimeField(auto_now_add=True)
+    processed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Email from {self.sender}: {self.subject}"
 # Create your models here.

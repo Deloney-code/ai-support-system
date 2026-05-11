@@ -166,3 +166,71 @@ REPLY: (if yes, write the full resolution reply; if no, write nothing after REPL
             result['suggested_reply'] = _safe_ai_response(reply_text.strip())
 
     return result
+
+def generate_email_reply(ticket_title: str, ticket_description: str, sender_name: str) -> dict:
+    """
+    Analyzes an email-based ticket and generates an automatic reply.
+    Returns:
+      - 'can_resolve': bool
+      - 'reply': str — the email reply to send back
+      - 'confidence': str — high/medium/low
+    """
+    message = client.messages.create(
+        model="claude-sonnet-4-5",
+        max_tokens=1024,
+        messages=[
+            {
+                "role": "user",
+                "content": f"""You are an AI customer support agent for a software company.
+A customer sent this support email. Analyze it and decide if you can resolve it automatically.
+
+Customer name: {sender_name}
+Subject: {ticket_title}
+Message: {ticket_description}
+
+Simple requests you CAN resolve: password resets, business hours, pricing info,
+how-to questions, account info requests, billing questions, feature explanations.
+
+Complex requests requiring human: bugs, technical errors, refunds, complaints,
+security issues, data loss, account compromises.
+
+Reply with exactly:
+CAN_RESOLVE: yes or no
+CONFIDENCE: high, medium, or low
+REPLY: (write the full professional email reply to send back to the customer)
+
+The reply should:
+- Address the customer by name
+- Be professional and empathetic
+- Resolve their issue if possible
+- Let them know a human agent will follow up if you cannot resolve it"""
+            }
+        ]
+    )
+
+    raw = message.content[0].text.strip()
+    result = {
+        'can_resolve': False,
+        'confidence': 'low',
+        'reply': ''
+    }
+
+    lines = raw.splitlines()
+    reply_lines = []
+    in_reply = False
+
+    for line in lines:
+        if line.startswith('CAN_RESOLVE:'):
+            result['can_resolve'] = line.split(':', 1)[1].strip().lower() == 'yes'
+        elif line.startswith('CONFIDENCE:'):
+            result['confidence'] = line.split(':', 1)[1].strip().lower()
+        elif line.startswith('REPLY:'):
+            in_reply = True
+            first = line.split(':', 1)[1].strip()
+            if first:
+                reply_lines.append(first)
+        elif in_reply:
+            reply_lines.append(line)
+
+    result['reply'] = _safe_ai_response('\n'.join(reply_lines).strip())
+    return result

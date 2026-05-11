@@ -161,3 +161,14 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 # Static files — whitenoise serves them in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Email configuration
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('MAILGUN_SMTP_SERVER', 'smtp.mailgun.org')
+EMAIL_PORT = int(os.getenv('MAILGUN_SMTP_PORT', 587))
+EMAIL_HOST_USER = os.getenv('MAILGUN_SMTP_LOGIN', '')
+EMAIL_HOST_PASSWORD = os.getenv('MAILGUN_SMTP_KEY', '')
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'support@mg.simedelonney.com')
+
+# Mailgun
+MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY', '')

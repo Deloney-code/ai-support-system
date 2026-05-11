@@ -224,3 +224,59 @@ def ai_auto_resolve(request, pk):
         return JsonResponse(result)
     except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
+
+        import hashlib
+import hmac
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@require_POST
+def mailgun_webhook(request):
+    """
+    Receives inbound emails from Mailgun.
+    Verifies the Mailgun signature before processing.
+    """
+    from .models import InboundEmail
+    from .tasks import process_inbound_email
+    import time
+
+    # Verify Mailgun signature
+    token = request.POST.get('token', '')
+    timestamp = request.POST.get('timestamp', '')
+    signature = request.POST.get('signature', '')
+
+    mailgun_api_key = settings.MAILGUN_API_KEY
+
+    if mailgun_api_key:
+        value = f"{timestamp}{token}".encode('utf-8')
+        expected = hmac.new(
+            mailgun_api_key.encode('utf-8'),
+            value,
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(expected, signature):
+            return JsonResponse({'error': 'Invalid signature'}, status=403)
+
+        # Reject replays older than 5 minutes
+        if abs(time.time() - int(timestamp)) > 300:
+            return JsonResponse({'error': 'Timestamp expired'}, status=403)
+
+    # Extract email data
+    sender = request.POST.get('sender', '')
+    subject = request.POST.get('subject', 'No Subject')
+    body = request.POST.get('body-plain', '') or request.POST.get('body-html', '')
+
+    if not sender or not body:
+        return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+    # Save and process
+    inbound = InboundEmail.objects.create(
+        sender=sender,
+        subject=subject[:255],
+        body=body,
+    )
+
+    process_inbound_email.delay(inbound.pk)
+
+    return JsonResponse({'status': 'received', 'ticket': 'being processed'})
