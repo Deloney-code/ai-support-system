@@ -172,3 +172,39 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'support@mg.simedelonney.co
 
 # Mailgun
 MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY', '')
+
+# ─── Security Headers ────────────────────────────────────────────────────────
+
+# Force HTTPS in production
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# HSTS — tell browsers to always use HTTPS for 1 year
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Prevent clickjacking — stops your app being embedded in iframes
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent browser from guessing content type
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Secure session cookies — only sent over HTTPS
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Session timeout — auto logout after 2 hours of inactivity
+SESSION_COOKIE_AGE = 7200
+
+# Secure CSRF cookie
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Content Security Policy headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
