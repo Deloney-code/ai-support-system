@@ -3,6 +3,16 @@ import sys
 
 
 def main() -> None:
+    # If START_COMMAND=worker, run Celery instead of daphne
+    if os.environ.get('START_COMMAND') == 'worker':
+        sys.stdout.write("start.py: launching celery worker\n")
+        sys.stdout.flush()
+        os.execvp(
+            'celery',
+            ['celery', '-A', 'core', 'worker', '--loglevel=info', '--pool=solo']
+        )
+        return
+
     port = os.environ.get("PORT")
     if not port:
         sys.stderr.write("start.py: PORT environment variable is not set\n")
