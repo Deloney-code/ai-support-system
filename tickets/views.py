@@ -10,6 +10,9 @@ from .forms import TicketForm, TicketCommentForm, TicketStatusForm
 from . import ai_service
 from .broadcasts import broadcast_new_ticket, broadcast_ticket_update
 from .tasks import process_inbound_email
+import hashlib
+import hmac
+import time
 
 
 def check_ticket_owner_or_agent(user, ticket):
