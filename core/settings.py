@@ -29,17 +29,11 @@ INSTALLED_APPS = [
     'tickets',
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',   # CSRF protection — never remove
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
 ROOT_URLCONF = 'core.urls'
+
+# NOTE: MIDDLEWARE is defined once, below the DATABASES block, and includes
+# WhiteNoise. Do not add a second MIDDLEWARE assignment — the last one wins
+# and silently overrides the others.
 
 TEMPLATES = [
     {
@@ -105,25 +99,8 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-# -------------------------------------------------------
-# SECURITY HEADERS
-# These are safe for development and critical for production
-# -------------------------------------------------------
-SECURE_BROWSER_XSS_FILTER = True          # Enables browser XSS filter
-X_FRAME_OPTIONS = 'DENY'                  # Blocks clickjacking
-SECURE_CONTENT_TYPE_NOSNIFF = True        # Prevents MIME sniffing attacks
-SESSION_COOKIE_HTTPONLY = True            # JS cannot read session cookie
-CSRF_COOKIE_HTTPONLY = True               # JS cannot read CSRF cookie
-
-# These flip to True in production (when DEBUG=False)
-SECURE_SSL_REDIRECT = False
+# Trust the X-Forwarded-Host header set by the Railway proxy.
 USE_X_FORWARDED_HOST = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_HSTS_PRELOAD = not DEBUG
 
 # -------------------------------------------------------
 # BLEACH — safe HTML tags for user-submitted content
@@ -155,10 +132,19 @@ CHANNEL_LAYERS = {
         },
     },
 }
+# Local dev origins, plus any production origins supplied via env
+# (comma-separated, e.g. "https://app.example.com,https://myapp.up.railway.app").
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+CSRF_TRUSTED_ORIGINS += [
+    origin.strip()
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS += ['https://*.railway.app', 'https://*.up.railway.app']
 # Static files — whitenoise serves them in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Email configuration
@@ -179,10 +165,11 @@ MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY', '')
 SECURE_SSL_REDIRECT = not DEBUG
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# HSTS — tell browsers to always use HTTPS for 1 year
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# HSTS — tell browsers to always use HTTPS for 1 year.
+# Disabled in DEBUG so a dev browser is never pinned to HTTPS on localhost.
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 # Prevent clickjacking — stops your app being embedded in iframes
 X_FRAME_OPTIONS = 'DENY'

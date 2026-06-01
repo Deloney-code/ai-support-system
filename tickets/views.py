@@ -252,20 +252,30 @@ def mailgun_webhook(request):
 
     mailgun_api_key = settings.MAILGUN_API_KEY
 
-    if mailgun_api_key:
-        value = f"{timestamp}{token}".encode('utf-8')
-        expected = hmac.new(
-            mailgun_api_key.encode('utf-8'),
-            value,
-            hashlib.sha256
-        ).hexdigest()
+    # Fail closed: if no signing key is configured, refuse to process the
+    # webhook rather than accepting unauthenticated, forgeable requests.
+    if not mailgun_api_key:
+        return JsonResponse({'error': 'Webhook not configured'}, status=503)
 
-        if not hmac.compare_digest(expected, signature):
-            return JsonResponse({'error': 'Invalid signature'}, status=403)
+    if not (token and timestamp and signature):
+        return JsonResponse({'error': 'Missing signature fields'}, status=403)
 
-        # Reject replays older than 5 minutes
+    # Reject replays (and bad timestamps) before doing crypto work.
+    try:
         if abs(time.time() - int(timestamp)) > 300:
             return JsonResponse({'error': 'Timestamp expired'}, status=403)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid timestamp'}, status=403)
+
+    value = f"{timestamp}{token}".encode('utf-8')
+    expected = hmac.new(
+        mailgun_api_key.encode('utf-8'),
+        value,
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(expected, signature):
+        return JsonResponse({'error': 'Invalid signature'}, status=403)
 
     # Extract email data
     sender = request.POST.get('sender', '')

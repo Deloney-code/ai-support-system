@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
+from django.utils.http import url_has_allowed_host_and_scheme
 from django_ratelimit.decorators import ratelimit
 from .forms import SecureRegistrationForm, SecureLoginForm
 
@@ -49,10 +50,17 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            # Redirect to the page they were trying to reach,
-            # or fall back to the dashboard
-            next_url = request.GET.get('next', 'tickets:dashboard')
-            return redirect(next_url)
+            # Redirect to the page they were trying to reach, but only if it
+            # points back at our own host — otherwise this is an open-redirect
+            # vector for phishing. Fall back to the dashboard.
+            next_url = request.GET.get('next', '')
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
+            return redirect('tickets:dashboard')
         else:
             messages.error(request, "Invalid username or password.")
 
