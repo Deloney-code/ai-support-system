@@ -43,7 +43,6 @@
             letter-spacing: -0.03em;
         }
 
-        /* ---------- Top nav ---------- */
         .sq-topnav {
             position: absolute;
             top: 0;
@@ -80,7 +79,6 @@
             color: #a5b4fc;
         }
 
-        /* ---------- Hero ---------- */
         .sq-hero {
             position: relative;
             background:
@@ -143,7 +141,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* ---------- Buttons ---------- */
         .btn {
             border-radius: 11px;
             font-weight: 600;
@@ -178,7 +175,6 @@
             color: #fff;
         }
 
-        /* ---------- Sections ---------- */
         section {
             padding: 5rem 0;
         }
@@ -195,7 +191,6 @@
             font-size: clamp(1.7rem, 3.5vw, 2.5rem);
         }
 
-        /* ---------- Feature cards ---------- */
         .sq-feature {
             background: #fff;
             border: 1px solid var(--border);
@@ -225,7 +220,6 @@
             background: linear-gradient(135deg, var(--brand), #8b5cf6);
         }
 
-        /* ---------- How it works ---------- */
         .sq-step-num {
             width: 56px;
             height: 56px;
@@ -245,7 +239,6 @@
             background: #f4f6fb;
         }
 
-        /* ---------- Social proof ---------- */
         .sq-proof {
             background: var(--navy-900);
             color: #cbd5e1;
@@ -261,14 +254,12 @@
             font-size: 1.15rem;
         }
 
-        /* ---------- CTA strip ---------- */
         .sq-cta {
             background: linear-gradient(120deg, var(--brand-dark), #7c3aed);
             color: #fff;
             border-radius: 24px;
         }
 
-        /* ---------- Footer ---------- */
         .sq-footer {
             background: #060912;
             color: #94a3b8;
@@ -284,13 +275,21 @@
             color: #fff;
         }
 
-        @media (max-width: 575.98px) {
+        @media (max-width: 767.98px) {
             .sq-hero {
                 padding: 7rem 0 4rem;
             }
 
             section {
                 padding: 3.5rem 0;
+            }
+
+            .col-md-4 {
+                width: 100% !important;
+            }
+
+            .col-md-6 {
+                width: 100% !important;
             }
         }
     </style>
@@ -342,8 +341,8 @@
                     <div class="sq-feature">
                         <span class="sq-feature-icon"><i class="bi bi-envelope-paper"></i></span>
                         <h5 class="mb-2">AI Email Agent</h5>
-                        <p class="text-muted mb-0">Customer emails get instant AI replies — drafted, sent, and
-                            logged automatically, around the clock.</p>
+                        <p class="text-muted mb-0">Customer emails get instant AI replies — drafted, sent, and logged
+                            automatically, around the clock.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -358,8 +357,8 @@
                     <div class="sq-feature">
                         <span class="sq-feature-icon"><i class="bi bi-graph-up-arrow"></i></span>
                         <h5 class="mb-2">Real-time Dashboard</h5>
-                        <p class="text-muted mb-0">Live updates for your support team — new tickets and status
-                            changes appear instantly, no refresh needed.</p>
+                        <p class="text-muted mb-0">Live updates for your support team — new tickets and status changes
+                            appear instantly, no refresh needed.</p>
                     </div>
                 </div>
             </div>
@@ -383,14 +382,14 @@
                 <div class="col-md-4">
                     <span class="sq-step-num">2</span>
                     <h5 class="mb-2">AI analyzes and responds in seconds</h5>
-                    <p class="text-muted mb-0">SupportIQ reads the message, classifies it, and replies instantly
-                        with an accurate, on-brand answer.</p>
+                    <p class="text-muted mb-0">SupportIQ reads the message, classifies it, and replies instantly with an
+                        accurate, on-brand answer.</p>
                 </div>
                 <div class="col-md-4">
                     <span class="sq-step-num">3</span>
                     <h5 class="mb-2">Complex issues escalated to human agents</h5>
-                    <p class="text-muted mb-0">Anything the AI can't confidently resolve is routed to your team
-                        with full context attached.</p>
+                    <p class="text-muted mb-0">Anything the AI can't confidently resolve is routed to your team with
+                        full context attached.</p>
                 </div>
             </div>
         </div>
@@ -453,63 +452,32 @@
         </div>
     </footer>
 
-    <!-- demo modal -->
-    <div class="modal fade" id="demomodal" tabindex="-1">
+    <!-- Demo Modal -->
+    <div class="modal fade" id="demoModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content" style="border-radius:18px;overflow:hidden">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold">
-                        <i class="bi bi-play-circle me-2 text-primary"></i>see supportiq in action
+                        <i class="bi bi-play-circle me-2 text-primary"></i>See SupportIQ in Action
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-2">
                     <div class="ratio ratio-16x9 mb-3">
-                        <iframe src="https://www.youtube.com/embed/dqw4w9wgxcq" title="supportiq demo" allowfullscreen
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="SupportIQ Demo" allowfullscreen
                             style="border-radius:12px">
                         </iframe>
                     </div>
                     <p class="text-muted text-center mb-0 small">
                         <i class="bi bi-stars me-1 text-primary"></i>
-                        watch how ai resolves customer tickets automatically in seconds
+                        Watch how AI resolves customer tickets automatically in seconds
                     </p>
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <a href="/accounts/register/" class="btn btn-brand px-4">
-                        <i class="bi bi-rocket-takeoff me-2"></i>get started free
+                        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
                     </a>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- demo modal -->
-    <div class="modal fade" id="demomodal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="border-radius:18px;overflow:hidden">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">
-                        <i class="bi bi-play-circle me-2 text-primary"></i>see supportiq in action
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body pt-2">
-                    <div class="ratio ratio-16x9 mb-3">
-                        <iframe src="https://www.youtube.com/embed/dqw4w9wgxcq" title="supportiq demo" allowfullscreen
-                            style="border-radius:12px">
-                        </iframe>
-                    </div>
-                    <p class="text-muted text-center mb-0 small">
-                        <i class="bi bi-stars me-1 text-primary"></i>
-                        watch how ai resolves customer tickets automatically in seconds
-                    </p>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <a href="/accounts/register/" class="btn btn-brand px-4">
-                        <i class="bi bi-rocket-takeoff me-2"></i>get started free
-                    </a>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">close</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -518,4 +486,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-</html
+</html>
