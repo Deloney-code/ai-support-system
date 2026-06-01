@@ -1,7 +1,10 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from unittest.mock import patch, MagicMock
+import time
+import hmac
+import hashlib
 from .models import Ticket, TicketComment, InboundEmail
 from .ai_service import classify_ticket, auto_resolve_check
 
@@ -418,16 +421,39 @@ class AIClassifyViewTest(UserSetupMixin, TestCase):
 
 # ─── Mailgun Webhook Tests ───────────────────────────────────────────────────
 
+@override_settings(MAILGUN_API_KEY='test-signing-key')
 class MailgunWebhookTest(TestCase):
+    """
+    The webhook fails closed: it requires a configured signing key and a
+    valid Mailgun HMAC signature over `{timestamp}{token}`. These tests
+    supply a real signature with a current timestamp.
+    """
+
+    def _sign(self, timestamp, token):
+        return hmac.new(
+            b'test-signing-key',
+            f"{timestamp}{token}".encode('utf-8'),
+            hashlib.sha256,
+        ).hexdigest()
 
     def test_webhook_missing_fields_returns_400(self):
+        timestamp = str(int(time.time()))
+        token = 'testtoken'
         response = self.client.post(
             reverse('tickets:mailgun_webhook'),
-            {'sender': '', 'body-plain': ''}
+            {
+                'sender': '',
+                'body-plain': '',
+                'token': token,
+                'timestamp': timestamp,
+                'signature': self._sign(timestamp, token),
+            }
         )
         self.assertEqual(response.status_code, 400)
 
     def test_webhook_creates_inbound_email(self):
+        timestamp = str(int(time.time()))
+        token = 'testtoken'
         with patch('tickets.views.process_inbound_email.delay'):
             response = self.client.post(
                 reverse('tickets:mailgun_webhook'),
@@ -435,9 +461,9 @@ class MailgunWebhookTest(TestCase):
                     'sender': 'customer@example.com',
                     'subject': 'Test email subject',
                     'body-plain': 'This is a test email body.',
-                    'token': 'testtoken',
-                    'timestamp': '1234567890',
-                    'signature': 'testsignature',
+                    'token': token,
+                    'timestamp': timestamp,
+                    'signature': self._sign(timestamp, token),
                 }
             )
         self.assertEqual(response.status_code, 200)

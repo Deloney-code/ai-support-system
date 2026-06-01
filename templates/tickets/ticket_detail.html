@@ -97,8 +97,8 @@
 
                 <!-- Description -->
                 <h6 class="fw-semibold mb-2">Description</h6>
-                <div class="rounded-3 p-3" style="background:var(--bg);border:1px solid var(--border)">
-                    <p class="mb-0" style="white-space:pre-wrap">{{ ticket.description }}</p>
+                <div class="rounded-3 p-3 sq-richtext" style="background:var(--bg);border:1px solid var(--border)">
+                    {{ ticket.description|linebreaks }}
                 </div>
             </div>
         </div>
@@ -123,7 +123,7 @@
                                 <strong>{{ comment.author.username }}</strong>
                                 <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
                             </div>
-                            <p class="mb-0" style="white-space:pre-wrap">{{ comment.body }}</p>
+                            <div class="mb-0 sq-richtext">{{ comment.body|linebreaks }}</div>
                         </div>
                     </div>
                 </div>

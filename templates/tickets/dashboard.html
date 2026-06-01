@@ -30,7 +30,7 @@
                 </div>
                 <div>
                     <div class="text-muted small fw-medium">Total</div>
-                    <div class="fs-3 fw-bold">{{ tickets|length }}</div>
+                    <div class="fs-3 fw-bold">{{ total_count }}</div>
                 </div>
             </div>
         </div>
@@ -76,11 +76,25 @@
     </div>
 </div>
 
-<!-- Tickets Table -->
+<!-- Tickets Card -->
 <div class="card">
-    <div class="card-header d-flex align-items-center justify-content-between py-3">
-        <h5 class="mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>Tickets</h5>
-        <span class="text-muted small">{{ tickets|length }} total</span>
+    <div class="card-header py-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <h5 class="mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>Tickets</h5>
+            <!-- Search -->
+            <div class="input-group input-group-sm" style="max-width:280px">
+                <span class="input-group-text"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="ticket-search" class="form-control" placeholder="Search by title...">
+            </div>
+        </div>
+        <!-- Status filter buttons -->
+        <div class="d-flex flex-wrap gap-2 mt-3" id="status-filters">
+            <button type="button" class="btn btn-sm btn-primary" data-status="">All</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="open">Open</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="in_progress">In Progress</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="resolved">Resolved</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="closed">Closed</button>
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -96,8 +110,9 @@
                     </tr>
                 </thead>
                 <tbody id="ticket-body">
-                    {% for ticket in tickets %}
-                    <tr id="ticket-row-{{ ticket.pk }}">
+                    {% for ticket in page_obj %}
+                    <tr id="ticket-row-{{ ticket.pk }}" data-href="{% url 'tickets:ticket_detail' ticket.pk %}"
+                        data-title="{{ ticket.title|lower }}" data-status="{{ ticket.status }}">
                         <td class="ps-4 text-muted">{{ ticket.pk }}</td>
                         <td>
                             <a href="{% url 'tickets:ticket_detail' ticket.pk %}"
@@ -131,7 +146,10 @@
                                 <span class="sq-avatar me-2" style="width:30px;height:30px;font-size:0.78rem">
                                     {{ ticket.owner.username|first|upper }}
                                 </span>
-                                <span class="text-truncate" style="max-width:140px">{{ ticket.owner.username }}</span>
+                                <span class="text-truncate" style="max-width:140px"
+                                    data-bs-toggle="tooltip" title="{{ ticket.owner.username }}">
+                                    {{ ticket.owner.username }}
+                                </span>
                             </div>
                         </td>
                     </tr>
@@ -146,11 +164,108 @@
                         </td>
                     </tr>
                     {% endfor %}
+                    <!-- Shown by JS when search/filter hides every row -->
+                    <tr id="no-results" class="d-none">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-search display-6 d-block mb-3 opacity-50"></i>
+                            No tickets match your search or filter.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="card-footer bg-white d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+        <span class="text-muted small">
+            Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ total_count }}
+        </span>
+        <nav aria-label="Ticket pagination">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+    // ─── Search + status filter (client-side, current page) ──────────────────
+    const searchInput = document.getElementById('ticket-search');
+    const filterBar = document.getElementById('status-filters');
+    let currentStatus = '';
+
+    function statusKey(displayOrRaw) {
+        const k = (displayOrRaw || '').toLowerCase();
+        if (k.indexOf('progress') !== -1) return 'in_progress';
+        if (k.indexOf('resolv') !== -1) return 'resolved';
+        if (k.indexOf('clos') !== -1) return 'closed';
+        if (k.indexOf('open') !== -1) return 'open';
+        return k;
+    }
+
+    function applyFilters() {
+        const term = (searchInput.value || '').trim().toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('#ticket-body tr[data-title]').forEach(function (row) {
+            const matchSearch = !term || (row.dataset.title || '').indexOf(term) !== -1;
+            const matchStatus = !currentStatus || row.dataset.status === currentStatus;
+            const show = matchSearch && matchStatus;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        const noResults = document.getElementById('no-results');
+        const hasRows = document.querySelector('#ticket-body tr[data-title]') !== null;
+        if (noResults) noResults.classList.toggle('d-none', visible !== 0 || !hasRows);
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+
+    filterBar.addEventListener('click', function (e) {
+        const btn = e.target.closest('button[data-status]');
+        if (!btn) return;
+        currentStatus = btn.dataset.status;
+        filterBar.querySelectorAll('button').forEach(function (b) {
+            b.classList.toggle('btn-primary', b === btn);
+            b.classList.toggle('btn-outline-secondary', b !== btn);
+        });
+        applyFilters();
+    });
+
+    // ─── Clickable rows ──────────────────────────────────────────────────────
+    document.getElementById('ticket-body').addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;            // let links behave normally
+        const row = e.target.closest('tr[data-href]');
+        if (row) window.location = row.dataset.href;
+    });
+
+    // ─── Tooltips ────────────────────────────────────────────────────────────
+    function initTooltips(scope) {
+        (scope || document).querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+            if (!bootstrap.Tooltip.getInstance(el)) new bootstrap.Tooltip(el);
+        });
+    }
+    initTooltips();
+</script>
 
 {% if user.is_agent %}
 <script>
@@ -160,11 +275,7 @@
     let reconnectInterval = null;
 
     function statusPill(s) {
-        const k = (s || '').toLowerCase();
-        let cls = 'pill-open';
-        if (k.indexOf('progress') !== -1) cls = 'pill-progress';
-        else if (k.indexOf('resolv') !== -1) cls = 'pill-resolved';
-        else if (k.indexOf('clos') !== -1) cls = 'pill-closed';
+        const cls = { open: 'pill-open', in_progress: 'pill-progress', resolved: 'pill-resolved', closed: 'pill-closed' }[statusKey(s)] || 'pill-open';
         return `<span class="pill ${cls}"><span class="dot"></span>${s}</span>`;
     }
 
@@ -214,6 +325,9 @@
         const tbody = document.getElementById('ticket-body');
         const row = document.createElement('tr');
         row.id = 'ticket-row-' + data.ticket_id;
+        row.dataset.href = '/tickets/' + data.ticket_id + '/';
+        row.dataset.title = (data.title || '').toLowerCase();
+        row.dataset.status = statusKey(data.status);
         const initial = (data.owner || '?').charAt(0).toUpperCase();
         row.innerHTML = `
             <td class="ps-4 text-muted">${data.ticket_id}</td>
@@ -224,11 +338,13 @@
             <td class="pe-4">
                 <div class="d-flex align-items-center">
                     <span class="sq-avatar me-2" style="width:30px;height:30px;font-size:0.78rem">${initial}</span>
-                    <span>${data.owner}</span>
+                    <span class="text-truncate" style="max-width:140px" data-bs-toggle="tooltip" title="${data.owner}">${data.owner}</span>
                 </div>
             </td>
         `;
         tbody.insertBefore(row, tbody.firstChild);
+        initTooltips(row);
+        applyFilters();
 
         const openCount = document.getElementById('open-count');
         openCount.textContent = parseInt(openCount.textContent) + 1;
@@ -239,6 +355,11 @@
         const priorityEl = document.getElementById('priority-' + data.ticket_id);
         if (statusEl) statusEl.innerHTML = statusPill(data.status);
         if (priorityEl) priorityEl.innerHTML = priorityPill(data.priority);
+        const row = document.getElementById('ticket-row-' + data.ticket_id);
+        if (row) {
+            row.dataset.status = statusKey(data.status);
+            applyFilters();
+        }
     }
 
     connect();

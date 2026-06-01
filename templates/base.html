@@ -263,6 +263,12 @@
         /* ---------- Alerts ---------- */
         .alert { border-radius: 12px; border: 1px solid transparent; font-size: 0.92rem; }
 
+        /* Rich text rendered via the |linebreaks filter */
+        .sq-richtext p:last-child { margin-bottom: 0; }
+
+        /* Clickable table rows */
+        tr[data-href] { cursor: pointer; }
+
         /* ---------- Layout ---------- */
         main { min-height: calc(100vh - 140px); }
 

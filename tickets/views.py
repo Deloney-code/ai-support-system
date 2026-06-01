@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.views.decorators.http import require_http_methods, require_POST
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
@@ -27,8 +28,15 @@ def dashboard(request):
     else:
         tickets = Ticket.objects.filter(owner=request.user)
 
+    # Paginate the ticket list — 15 per page.
+    paginator = Paginator(tickets, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
+        # `tickets` stays the full queryset (used for counts and relied on by tests).
         'tickets': tickets,
+        'page_obj': page_obj,
+        'total_count': paginator.count,
         'open_count': tickets.filter(status='open').count(),
         'in_progress_count': tickets.filter(status='in_progress').count(),
         'resolved_count': tickets.filter(status='resolved').count(),
