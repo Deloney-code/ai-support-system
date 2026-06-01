@@ -8,20 +8,18 @@
 
     <!-- Page Header -->
     <div class="d-flex align-items-center mb-4">
-      <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3">
+      <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3" title="Back">
         <i class="bi bi-arrow-left"></i>
       </a>
       <div>
-        <h2 class="mb-0">
-          <i class="bi bi-ticket-detailed me-2 text-primary"></i>{{ action }} Ticket
-        </h2>
-        <p class="text-muted mb-0">Fill in the details below</p>
+        <h2 class="mb-1">{{ action }} Ticket</h2>
+        <p class="text-muted mb-0">Tell us what you need help with and we'll route it to the right place</p>
       </div>
     </div>
 
     <!-- Form Card -->
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
+    <div class="card">
+      <div class="card-body p-4 p-lg-5">
         <form method="POST" novalidate>
           {% csrf_token %}
 
@@ -60,4 +58,16 @@
 
   </div>
 </div>
+
+<script>
+  // Apply Bootstrap form styling to fields rendered by Django widgets
+  document.querySelectorAll('form input, form textarea, form select').forEach(function (el) {
+    if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') return;
+    if (el.tagName === 'SELECT') {
+      el.classList.add('form-select');
+    } else {
+      el.classList.add('form-control');
+    }
+  });
+</script>
 {% endblock %}

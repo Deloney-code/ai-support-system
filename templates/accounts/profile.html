@@ -4,16 +4,16 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-9">
 
         <!-- Page Header -->
         <div class="d-flex align-items-center mb-4">
-            <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3">
+            <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3" title="Back">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <div>
-                <h2 class="mb-0"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h2>
-                <p class="text-muted mb-0">Your account information</p>
+                <h2 class="mb-1">My Profile</h2>
+                <p class="text-muted mb-0">Your account information and activity</p>
             </div>
         </div>
 
@@ -21,26 +21,28 @@
 
             <!-- Profile Card -->
             <div class="col-md-4">
-                <div class="card border-0 shadow-sm text-center">
+                <div class="card sq-hover text-center h-100">
                     <div class="card-body p-4">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center 
-                            justify-content-center mb-3" style="width:80px;height:80px;font-size:2rem;font-weight:700">
+                        <span class="sq-avatar mb-3" style="width:84px;height:84px;font-size:2.1rem">
                             {{ user.username|first|upper }}
-                        </div>
-                        <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
-                        <p class="text-muted small mb-2">@{{ user.username }}</p>
-                        <span class="badge 
-                            {% if user.is_superuser %}bg-danger
-                            {% elif user.is_staff %}bg-warning text-dark
-                            {% elif user.role == 'agent' %}bg-info
-                            {% else %}bg-success{% endif %} mb-3">
-                            {% if user.is_superuser %}Admin
-                            {% elif user.role == 'agent' %}Agent
-                            {% else %}Customer{% endif %}
                         </span>
-                        <div class="text-muted small">
-                            <i class="bi bi-calendar me-1"></i>
-                            Joined {{ user.date_joined|date:"M d, Y" }}
+                        <h5 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                        <p class="text-muted small mb-3">@{{ user.username }}</p>
+                        <div class="mb-3">
+                            <span class="pill
+                                {% if user.is_superuser %}pill-critical
+                                {% elif user.role == 'agent' %}pill-resolved
+                                {% else %}pill-open{% endif %}">
+                                <i class="bi bi-{% if user.is_superuser %}shield-lock{% elif user.role == 'agent' %}headset{% else %}person{% endif %}"></i>
+                                {% if user.is_superuser %}Admin{% elif user.role == 'agent' %}Agent{% else %}Customer{% endif %}
+                            </span>
+                        </div>
+                        <div class="rounded-3 p-3" style="background:var(--bg);border:1px solid var(--border)">
+                            <div class="fs-3 fw-bold" style="color:var(--brand-dark)">{{ user.tickets.count }}</div>
+                            <small class="text-muted">Tickets created</small>
+                        </div>
+                        <div class="text-muted small mt-3">
+                            <i class="bi bi-calendar3 me-1"></i>Joined {{ user.date_joined|date:"M d, Y" }}
                         </div>
                     </div>
                 </div>
@@ -48,80 +50,54 @@
 
             <!-- Account Details Card -->
             <div class="col-md-8">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom py-3">
+                <div class="card h-100">
+                    <div class="card-header py-3">
                         <h5 class="mb-0">
-                            <i class="bi bi-info-circle me-2 text-primary"></i>Account Details
+                            <i class="bi bi-person-vcard me-2 text-primary"></i>Account Details
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <div class="row g-3">
+                        <div class="row g-4">
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">Username</small>
-                                <span>{{ user.username }}</span>
+                                <small class="text-muted d-block mb-1">Username</small>
+                                <span class="fw-medium">{{ user.username }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">Email</small>
-                                <span>{{ user.email|default:"Not provided" }}</span>
+                                <small class="text-muted d-block mb-1">Email</small>
+                                <span class="fw-medium">{{ user.email|default:"Not provided" }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">First Name</small>
-                                <span>{{ user.first_name|default:"Not provided" }}</span>
+                                <small class="text-muted d-block mb-1">First Name</small>
+                                <span class="fw-medium">{{ user.first_name|default:"Not provided" }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">Last Name</small>
-                                <span>{{ user.last_name|default:"Not provided" }}</span>
+                                <small class="text-muted d-block mb-1">Last Name</small>
+                                <span class="fw-medium">{{ user.last_name|default:"Not provided" }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">Account Status</small>
-                                <span class="badge bg-success">Active</span>
+                                <small class="text-muted d-block mb-1">Account Status</small>
+                                <span class="pill pill-open"><span class="dot"></span>Active</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block fw-semibold">Last Login</small>
-                                <span>{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
+                                <small class="text-muted d-block mb-1">Last Login</small>
+                                <span class="fw-medium">{{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</span>
                             </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-grid-1x2 me-2"></i>Go to Dashboard
+                            </a>
+                            <a href="{% url 'tickets:ticket_create' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>New Ticket
+                            </a>
                         </div>
                     </div>
                 </div>
-
-                <!-- Quick Stats Card -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h5 class="mb-0">
-                            <i class="bi bi-bar-chart me-2 text-primary"></i>My Ticket Stats
-                        </h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3 text-center">
-                            <div class="col-4">
-                                <div class="bg-success bg-opacity-10 rounded p-3">
-                                    <div class="fs-4 fw-bold text-success">
-                                        {{ user.ticket_set.count }}
-                                    </div>
-                                    <small class="text-muted">Total Tickets</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="bg-warning bg-opacity-10 rounded p-3">
-                                    <div class="fs-4 fw-bold text-warning">
-                                        {{ user.ticket_set.filter.count }}
-                                    </div>
-                                    <small class="text-muted">Open</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="bg-info bg-opacity-10 rounded p-3">
-                                    <div class="fs-4 fw-bold text-info">
-                                        {{ user.ticket_set.all|length }}
-                                    </div>
-                                    <small class="text-muted">Resolved</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
+
         </div>
 
     </div>
