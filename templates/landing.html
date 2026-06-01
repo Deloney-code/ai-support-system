@@ -10,7 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -23,7 +24,9 @@
             --border: #e8ebf2;
         }
 
-        * { -webkit-font-smoothing: antialiased; }
+        * {
+            -webkit-font-smoothing: antialiased;
+        }
 
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -31,7 +34,14 @@
             letter-spacing: -0.01em;
         }
 
-        h1, h2, h3, h4, h5 { font-weight: 800; letter-spacing: -0.03em; }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
 
         /* ---------- Top nav ---------- */
         .sq-topnav {
@@ -66,7 +76,9 @@
             box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
         }
 
-        .sq-iq { color: #a5b4fc; }
+        .sq-iq {
+            color: #a5b4fc;
+        }
 
         /* ---------- Hero ---------- */
         .sq-hero {
@@ -93,7 +105,10 @@
             pointer-events: none;
         }
 
-        .sq-hero .container { position: relative; z-index: 1; }
+        .sq-hero .container {
+            position: relative;
+            z-index: 1;
+        }
 
         .sq-badge {
             display: inline-flex;
@@ -135,7 +150,9 @@
             transition: transform 0.14s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        .btn:active { transform: translateY(1px); }
+        .btn:active {
+            transform: translateY(1px);
+        }
 
         .btn-brand {
             background: var(--brand);
@@ -144,7 +161,11 @@
             box-shadow: 0 10px 26px rgba(99, 102, 241, 0.45);
         }
 
-        .btn-brand:hover { background: var(--brand-dark); color: #fff; box-shadow: 0 12px 30px rgba(99, 102, 241, 0.55); }
+        .btn-brand:hover {
+            background: var(--brand-dark);
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.55);
+        }
 
         .btn-ghost {
             background: rgba(255, 255, 255, 0.06);
@@ -152,10 +173,15 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .btn-ghost:hover { background: rgba(255, 255, 255, 0.14); color: #fff; }
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+        }
 
         /* ---------- Sections ---------- */
-        section { padding: 5rem 0; }
+        section {
+            padding: 5rem 0;
+        }
 
         .sq-eyebrow {
             text-transform: uppercase;
@@ -165,7 +191,9 @@
             color: var(--brand-dark);
         }
 
-        .sq-section-title { font-size: clamp(1.7rem, 3.5vw, 2.5rem); }
+        .sq-section-title {
+            font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+        }
 
         /* ---------- Feature cards ---------- */
         .sq-feature {
@@ -213,14 +241,25 @@
             margin-bottom: 1rem;
         }
 
-        .sq-howitworks { background: #f4f6fb; }
+        .sq-howitworks {
+            background: #f4f6fb;
+        }
 
         /* ---------- Social proof ---------- */
-        .sq-proof { background: var(--navy-900); color: #cbd5e1; }
+        .sq-proof {
+            background: var(--navy-900);
+            color: #cbd5e1;
+        }
 
-        .sq-proof-item i { color: #a5b4fc; }
+        .sq-proof-item i {
+            color: #a5b4fc;
+        }
 
-        .sq-proof-item .big { font-weight: 800; color: #fff; font-size: 1.15rem; }
+        .sq-proof-item .big {
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.15rem;
+        }
 
         /* ---------- CTA strip ---------- */
         .sq-cta {
@@ -230,13 +269,29 @@
         }
 
         /* ---------- Footer ---------- */
-        .sq-footer { background: #060912; color: #94a3b8; padding: 3rem 0 2rem; }
-        .sq-footer a { color: #cbd5e1; text-decoration: none; }
-        .sq-footer a:hover { color: #fff; }
+        .sq-footer {
+            background: #060912;
+            color: #94a3b8;
+            padding: 3rem 0 2rem;
+        }
+
+        .sq-footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .sq-footer a:hover {
+            color: #fff;
+        }
 
         @media (max-width: 575.98px) {
-            .sq-hero { padding: 7rem 0 4rem; }
-            section { padding: 3.5rem 0; }
+            .sq-hero {
+                padding: 7rem 0 4rem;
+            }
+
+            section {
+                padding: 3.5rem 0;
+            }
         }
     </style>
 </head>
@@ -268,9 +323,9 @@
                 <a href="/accounts/register/" class="btn btn-brand btn-lg px-4">
                     <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
                 </a>
-                <a href="/accounts/login/" class="btn btn-ghost btn-lg px-4">
+                <button class="btn btn-ghost btn-lg px-4" data-bs-toggle="modal" data-bs-target="#demoModal">
                     <i class="bi bi-play-circle me-2"></i>See Demo
-                </a>
+                </button>
             </div>
         </div>
     </header>
@@ -398,7 +453,69 @@
         </div>
     </footer>
 
+    <!-- demo modal -->
+    <div class="modal fade" id="demomodal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:18px;overflow:hidden">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-play-circle me-2 text-primary"></i>see supportiq in action
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <div class="ratio ratio-16x9 mb-3">
+                        <iframe src="https://www.youtube.com/embed/dqw4w9wgxcq" title="supportiq demo" allowfullscreen
+                            style="border-radius:12px">
+                        </iframe>
+                    </div>
+                    <p class="text-muted text-center mb-0 small">
+                        <i class="bi bi-stars me-1 text-primary"></i>
+                        watch how ai resolves customer tickets automatically in seconds
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <a href="/accounts/register/" class="btn btn-brand px-4">
+                        <i class="bi bi-rocket-takeoff me-2"></i>get started free
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- demo modal -->
+    <div class="modal fade" id="demomodal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius:18px;overflow:hidden">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-play-circle me-2 text-primary"></i>see supportiq in action
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <div class="ratio ratio-16x9 mb-3">
+                        <iframe src="https://www.youtube.com/embed/dqw4w9wgxcq" title="supportiq demo" allowfullscreen
+                            style="border-radius:12px">
+                        </iframe>
+                    </div>
+                    <p class="text-muted text-center mb-0 small">
+                        <i class="bi bi-stars me-1 text-primary"></i>
+                        watch how ai resolves customer tickets automatically in seconds
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <a href="/accounts/register/" class="btn btn-brand px-4">
+                        <i class="bi bi-rocket-takeoff me-2"></i>get started free
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-</html>
+</html
