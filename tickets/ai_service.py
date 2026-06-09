@@ -87,7 +87,7 @@ def classify_ticket(ticket_title: str, ticket_description: str) -> dict:
     Falls back to safe defaults if parsing fails.
     """
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-haiku-4-5-20251001",
         max_tokens=128,
         messages=[
             {
@@ -130,7 +130,7 @@ def auto_resolve_check(ticket_title: str, ticket_description: str) -> dict:
       - 'suggested_reply': str (empty if can_resolve is False)
     """
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-haiku-4-5-20251001",
         max_tokens=512,
         messages=[
             {
@@ -176,7 +176,7 @@ def generate_email_reply(ticket_title: str, ticket_description: str, sender_name
       - 'confidence': str — high/medium/low
     """
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-haiku-4-5-20251001",
         max_tokens=1024,
         messages=[
             {
