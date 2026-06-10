@@ -7,8 +7,7 @@
 <!-- Page Header -->
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div class="d-flex align-items-center">
-        <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3"
-            title="Back to dashboard">
+        <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3" title="Back to dashboard">
             <i class="bi bi-arrow-left"></i>
         </a>
         <div>
@@ -91,7 +90,8 @@
                     {% endif %}
                     <div class="col-sm-6">
                         <small class="text-muted d-block mb-1">Created</small>
-                        <strong><i class="bi bi-calendar3 me-1 text-muted"></i>{{ ticket.created_at|date:"M d, Y H:i" }}</strong>
+                        <strong><i class="bi bi-calendar3 me-1 text-muted"></i>{{ ticket.created_at|date:"M d, Y H:i"
+                            }}</strong>
                     </div>
                 </div>
 
@@ -245,9 +245,11 @@
     const csrfToken = '{{ csrf_token }}';
     const ticketPk = '{{ ticket.pk }}';
 
-    async function aiPost(endpoint) {
+    async function aiPost(endpoint)
+    {
         const body = new URLSearchParams();
-        if (endpoint === 'polish') {
+        if (endpoint === 'polish')
+        {
             body.append('rough_reply', document.getElementById('rough-reply').value);
         }
         body.append('csrfmiddlewaretoken', csrfToken);
@@ -259,60 +261,72 @@
         return res.json();
     }
 
-    async function aiSummarize(btn) {
+    async function aiSummarize(btn)
+    {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Summarizing...';
         const data = await aiPost('summarize');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-file-text me-2"></i>Summarize Ticket';
-        if (data.summary) {
+        if (data.summary)
+        {
             document.getElementById('summary-text').textContent = data.summary;
             document.getElementById('ai-summary').classList.remove('d-none');
-        } else {
+        } else
+        {
             alert('Could not summarize ticket.');
         }
     }
 
-    async function aiClassify(btn) {
+    async function aiClassify(btn)
+    {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Classifying...';
         const data = await aiPost('classify');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-tags me-2"></i>Classify Ticket';
-        if (data.category) {
+        if (data.category)
+        {
             document.getElementById('class-category').textContent = data.category;
             document.getElementById('class-priority').textContent = data.priority;
             document.getElementById('ai-classification').classList.remove('d-none');
-        } else {
+        } else
+        {
             alert('Could not classify ticket.');
         }
     }
 
-    async function aiAutoResolve(btn) {
+    async function aiAutoResolve(btn)
+    {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Checking...';
         const data = await aiPost('auto-resolve');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-magic me-2"></i>Check Auto-Resolve';
         const el = document.getElementById('autoresolve-result');
-        if (data.can_resolve) {
+        if (data.can_resolve)
+        {
             el.textContent = 'Suggested resolution: ' + data.suggested_reply;
-        } else {
+        } else
+        {
             el.textContent = 'This ticket requires manual handling.';
         }
         document.getElementById('ai-autoresolve').classList.remove('d-none');
     }
 
-    async function aiPolish(btn) {
+    async function aiPolish(btn)
+    {
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Polishing...';
         const data = await aiPost('polish');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-stars me-2"></i>Polish with AI';
-        if (data.polished_reply) {
+        if (data.polished_reply)
+        {
             document.getElementById('polished-text').textContent = data.polished_reply;
             document.getElementById('polished-result').classList.remove('d-none');
-        } else {
+        } else
+        {
             alert('Could not polish reply.');
         }
     }

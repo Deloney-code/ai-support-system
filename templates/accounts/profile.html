@@ -33,8 +33,10 @@
                                 {% if user.is_superuser %}pill-critical
                                 {% elif user.role == 'agent' %}pill-resolved
                                 {% else %}pill-open{% endif %}">
-                                <i class="bi bi-{% if user.is_superuser %}shield-lock{% elif user.role == 'agent' %}headset{% else %}person{% endif %}"></i>
-                                {% if user.is_superuser %}Admin{% elif user.role == 'agent' %}Agent{% else %}Customer{% endif %}
+                                <i
+                                    class="bi bi-{% if user.is_superuser %}shield-lock{% elif user.role == 'agent' %}headset{% else %}person{% endif %}"></i>
+                                {% if user.is_superuser %}Admin{% elif user.role == 'agent' %}Agent{% else %}Customer{%
+                                endif %}
                             </span>
                         </div>
                         <div class="rounded-3 p-3" style="background:var(--bg);border:1px solid var(--border)">

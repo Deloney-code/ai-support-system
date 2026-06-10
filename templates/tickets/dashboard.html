@@ -91,7 +91,8 @@
         <div class="d-flex flex-wrap gap-2 mt-3" id="status-filters">
             <button type="button" class="btn btn-sm btn-primary" data-status="">All</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-status="open">Open</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="in_progress">In Progress</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-status="in_progress">In
+                Progress</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-status="resolved">Resolved</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-status="closed">Closed</button>
         </div>
@@ -146,8 +147,8 @@
                                 <span class="sq-avatar me-2" style="width:30px;height:30px;font-size:0.78rem">
                                     {{ ticket.owner.username|first|upper }}
                                 </span>
-                                <span class="text-truncate" style="max-width:140px"
-                                    data-bs-toggle="tooltip" title="{{ ticket.owner.username }}">
+                                <span class="text-truncate" style="max-width:140px" data-bs-toggle="tooltip"
+                                    title="{{ ticket.owner.username }}">
                                     {{ ticket.owner.username }}
                                 </span>
                             </div>
@@ -177,7 +178,7 @@
     </div>
 
     {% if page_obj.paginator.num_pages > 1 %}
-    <div class="card-footer bg-white d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+    <div class="card-footer d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
         <span class="text-muted small">
             Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ total_count }}
         </span>
@@ -190,18 +191,18 @@
                     </a>
                 </li>
                 {% for num in page_obj.paginator.page_range %}
-                    {% if num == page_obj.number %}
-                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
-                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %} <li class="page-item"><a
+                        class="page-link" href="?page={{ num }}">{{ num }}</a></li>
                     {% endif %}
-                {% endfor %}
-                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                    <a class="page-link"
-                        href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </li>
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link"
+                            href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
             </ul>
         </nav>
     </div>
@@ -214,7 +215,8 @@
     const filterBar = document.getElementById('status-filters');
     let currentStatus = '';
 
-    function statusKey(displayOrRaw) {
+    function statusKey(displayOrRaw)
+    {
         const k = (displayOrRaw || '').toLowerCase();
         if (k.indexOf('progress') !== -1) return 'in_progress';
         if (k.indexOf('resolv') !== -1) return 'resolved';
@@ -223,10 +225,12 @@
         return k;
     }
 
-    function applyFilters() {
+    function applyFilters()
+    {
         const term = (searchInput.value || '').trim().toLowerCase();
         let visible = 0;
-        document.querySelectorAll('#ticket-body tr[data-title]').forEach(function (row) {
+        document.querySelectorAll('#ticket-body tr[data-title]').forEach(function (row)
+        {
             const matchSearch = !term || (row.dataset.title || '').indexOf(term) !== -1;
             const matchStatus = !currentStatus || row.dataset.status === currentStatus;
             const show = matchSearch && matchStatus;
@@ -240,11 +244,13 @@
 
     searchInput.addEventListener('input', applyFilters);
 
-    filterBar.addEventListener('click', function (e) {
+    filterBar.addEventListener('click', function (e)
+    {
         const btn = e.target.closest('button[data-status]');
         if (!btn) return;
         currentStatus = btn.dataset.status;
-        filterBar.querySelectorAll('button').forEach(function (b) {
+        filterBar.querySelectorAll('button').forEach(function (b)
+        {
             b.classList.toggle('btn-primary', b === btn);
             b.classList.toggle('btn-outline-secondary', b !== btn);
         });
@@ -252,15 +258,18 @@
     });
 
     // ─── Clickable rows ──────────────────────────────────────────────────────
-    document.getElementById('ticket-body').addEventListener('click', function (e) {
+    document.getElementById('ticket-body').addEventListener('click', function (e)
+    {
         if (e.target.closest('a')) return;            // let links behave normally
         const row = e.target.closest('tr[data-href]');
         if (row) window.location = row.dataset.href;
     });
 
     // ─── Tooltips ────────────────────────────────────────────────────────────
-    function initTooltips(scope) {
-        (scope || document).querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+    function initTooltips(scope)
+    {
+        (scope || document).querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el)
+        {
             if (!bootstrap.Tooltip.getInstance(el)) new bootstrap.Tooltip(el);
         });
     }
@@ -274,12 +283,14 @@
     let socket = null;
     let reconnectInterval = null;
 
-    function statusPill(s) {
+    function statusPill(s)
+    {
         const cls = { open: 'pill-open', in_progress: 'pill-progress', resolved: 'pill-resolved', closed: 'pill-closed' }[statusKey(s)] || 'pill-open';
         return `<span class="pill ${cls}"><span class="dot"></span>${s}</span>`;
     }
 
-    function priorityPill(p) {
+    function priorityPill(p)
+    {
         const k = (p || '').toLowerCase();
         let cls = 'pill-medium';
         if (k.indexOf('crit') !== -1) cls = 'pill-critical';
@@ -288,35 +299,44 @@
         return `<span class="pill ${cls}">${p}</span>`;
     }
 
-    function connect() {
+    function connect()
+    {
         socket = new WebSocket(wsUrl);
 
-        socket.onopen = function () {
+        socket.onopen = function ()
+        {
             document.getElementById('connection-status').classList.remove('d-none');
-            if (reconnectInterval) {
+            if (reconnectInterval)
+            {
                 clearInterval(reconnectInterval);
                 reconnectInterval = null;
             }
         };
 
-        socket.onclose = function () {
+        socket.onclose = function ()
+        {
             document.getElementById('connection-status').classList.add('d-none');
-            if (!reconnectInterval) {
+            if (!reconnectInterval)
+            {
                 reconnectInterval = setInterval(connect, 5000);
             }
         };
 
-        socket.onmessage = function (e) {
+        socket.onmessage = function (e)
+        {
             const data = JSON.parse(e.data);
-            if (data.type === 'ticket_new') {
+            if (data.type === 'ticket_new')
+            {
                 addTicketRow(data);
-            } else if (data.type === 'ticket_update') {
+            } else if (data.type === 'ticket_update')
+            {
                 updateTicketRow(data);
             }
         };
     }
 
-    function addTicketRow(data) {
+    function addTicketRow(data)
+    {
         const emptyRow = document.getElementById('empty-row');
         if (emptyRow) emptyRow.remove();
 
@@ -350,13 +370,15 @@
         openCount.textContent = parseInt(openCount.textContent) + 1;
     }
 
-    function updateTicketRow(data) {
+    function updateTicketRow(data)
+    {
         const statusEl = document.getElementById('status-' + data.ticket_id);
         const priorityEl = document.getElementById('priority-' + data.ticket_id);
         if (statusEl) statusEl.innerHTML = statusPill(data.status);
         if (priorityEl) priorityEl.innerHTML = priorityPill(data.priority);
         const row = document.getElementById('ticket-row-' + data.ticket_id);
-        if (row) {
+        if (row)
+        {
             row.dataset.status = statusKey(data.status);
             applyFilters();
         }

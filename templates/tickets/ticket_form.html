@@ -61,11 +61,14 @@
 
 <script>
   // Apply Bootstrap form styling to fields rendered by Django widgets
-  document.querySelectorAll('form input, form textarea, form select').forEach(function (el) {
+  document.querySelectorAll('form input, form textarea, form select').forEach(function (el)
+  {
     if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') return;
-    if (el.tagName === 'SELECT') {
+    if (el.tagName === 'SELECT')
+    {
       el.classList.add('form-select');
-    } else {
+    } else
+    {
       el.classList.add('form-control');
     }
   });
