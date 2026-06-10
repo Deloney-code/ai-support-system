@@ -1,1066 +1,713 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupportIQ — AI-Powered Customer Support for African Businesses</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
-    <style>
-        :root {
-            --orange: #FF5500;
-            --orange-light: #ff7a3d;
-            --dark: #111120;
-            --card: #1A1A2E;
-            --card-2: #21213a;
-            --text: #ffffff;
-            --muted: #aab0c4;
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        * {
-            -webkit-font-smoothing: antialiased;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            color: var(--text);
-            background: var(--dark);
-            letter-spacing: -0.01em;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5 {
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: #fff;
-        }
-
-        section {
-            padding: 6rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* ---------- Brand ---------- */
-        .sq-brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #fff !important;
-            text-decoration: none;
-            letter-spacing: -0.03em;
-        }
-
-        .sq-logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.15);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 1.15rem;
-        }
-
-        .sq-iq {
-            color: #ffd0b8;
-        }
-
-        /* ---------- Navbar ---------- */
-        .sq-nav {
-            background: var(--orange);
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-        }
-
-        .sq-nav .nav-link {
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.4rem 0.9rem;
-            opacity: 0.95;
-        }
-
-        .sq-nav .nav-link:hover {
-            opacity: 1;
-        }
-
-        /* ---------- Buttons ---------- */
-        .btn {
-            border-radius: 999px;
-            font-weight: 600;
-            transition: transform 0.14s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-        }
-
-        .btn-orange {
-            background: var(--orange);
-            color: #fff;
-            border: none;
-            box-shadow: 0 10px 30px rgba(255, 85, 0, 0.4);
-        }
-
-        .btn-orange:hover {
-            background: var(--orange-light);
-            color: #fff;
-            box-shadow: 0 12px 34px rgba(255, 85, 0, 0.55);
-        }
-
-        .btn-white {
-            background: #fff;
-            color: var(--orange);
-            border: none;
-        }
-
-        .btn-white:hover {
-            background: #f1f1f1;
-            color: var(--orange);
-        }
-
-        .btn-ghost-nav {
-            background: transparent;
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .btn-ghost-nav:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        .btn-outline-white {
-            background: transparent;
-            color: #fff;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-outline-white:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-color: #fff;
-        }
-
-        /* ---------- Glows ---------- */
-        .glow-right::before {
-            content: "";
-            position: absolute;
-            top: -10%;
-            right: -10%;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(255, 85, 0, 0.35), transparent 65%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .glow-left::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -15%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255, 85, 0, 0.22), transparent 65%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .glow-center::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(255, 85, 0, 0.18), transparent 65%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ---------- Hero ---------- */
-        .sq-hero {
-            padding: 6rem 0 5rem;
-        }
-
-        .sq-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding: 0.45rem 1rem;
-            border-radius: 999px;
-            background: rgba(255, 85, 0, 0.12);
-            border: 1px solid rgba(255, 85, 0, 0.35);
-            color: var(--orange-light);
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .sq-hero h1 {
-            font-size: clamp(2.4rem, 6vw, 4.4rem);
-            font-weight: 900;
-            line-height: 1.04;
-        }
-
-        .sq-hero .lead {
-            color: var(--muted);
-            font-size: 1.25rem;
-            max-width: 640px;
-        }
-
-        /* ---------- Mac window mockup ---------- */
-        .sq-window {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
-        }
-
-        .sq-window-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.9rem 1.1rem;
-            background: var(--card-2);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .sq-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .sq-stat {
-            background: var(--card-2);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.25rem;
-            height: 100%;
-            text-align: left;
-        }
-
-        .sq-stat .num {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-        }
-
-        .sq-stat .lbl {
-            color: var(--muted);
-            font-size: 0.85rem;
-            margin-top: 0.35rem;
-        }
-
-        .sq-stat .ico {
-            width: 40px;
-            height: 40px;
-            border-radius: 11px;
-            background: rgba(255, 85, 0, 0.15);
-            color: var(--orange);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.15rem;
-            margin-bottom: 0.75rem;
-        }
-
-        /* ---------- Eyebrow / titles ---------- */
-        .sq-eyebrow {
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--orange);
-        }
-
-        .sq-section-title {
-            font-size: clamp(1.9rem, 4vw, 2.8rem);
-        }
-
-        .sq-sub {
-            color: var(--muted);
-        }
-
-        /* ---------- Feature cards ---------- */
-        .sq-feature {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            height: 100%;
-            transition: transform 0.22s ease, border-color 0.22s ease;
-        }
-
-        .sq-feature:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255, 85, 0, 0.5);
-        }
-
-        .sq-feature-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 15px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--orange);
-            margin-bottom: 1.1rem;
-            background: rgba(255, 85, 0, 0.13);
-            border: 1px solid rgba(255, 85, 0, 0.25);
-        }
-
-        .sq-feature p {
-            color: var(--muted);
-        }
-
-        /* ---------- Steps ---------- */
-        .sq-step-num {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.8rem;
-            color: #fff;
-            background: var(--orange);
-            box-shadow: 0 12px 30px rgba(255, 85, 0, 0.4);
-            margin-bottom: 1.25rem;
-        }
-
-        .sq-step p {
-            color: var(--muted);
-        }
-
-        /* ---------- Pricing ---------- */
-        .sq-price {
-            border-radius: 22px;
-            padding: 2.25rem 2rem;
-            height: 100%;
-            border: 1px solid var(--border);
-        }
-
-        .sq-price-light {
-            background: #fff;
-            color: #15151f;
-        }
-
-        .sq-price-light h3,
-        .sq-price-light .price {
-            color: #15151f;
-        }
-
-        .sq-price-featured {
-            background: var(--orange);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 24px 60px rgba(255, 85, 0, 0.45);
-        }
-
-        .sq-price-featured h3,
-        .sq-price-featured .price {
-            color: #fff;
-        }
-
-        .price {
-            font-size: 2.1rem;
-            font-weight: 900;
-        }
-
-        .price span {
-            font-size: 1rem;
-            font-weight: 600;
-            opacity: 0.7;
-        }
-
-        .sq-price ul {
-            list-style: none;
-            padding: 0;
-            margin: 1.5rem 0;
-        }
-
-        .sq-price li {
-            padding: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.95rem;
-        }
-
-        .sq-price-light li {
-            color: #444;
-        }
-
-        .sq-price li i {
-            color: var(--orange);
-        }
-
-        .sq-price-featured li i {
-            color: #fff;
-        }
-
-        .sq-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 0.25rem 0.7rem;
-            border-radius: 999px;
-            margin-bottom: 0.75rem;
-        }
-
-        /* ---------- Testimonials ---------- */
-        .sq-quote {
-            border-radius: 20px;
-            padding: 2rem;
-            height: 100%;
-            border: 1px solid var(--border);
-        }
-
-        .sq-quote-dark {
-            background: var(--card);
-        }
-
-        .sq-quote-orange {
-            background: var(--orange);
-            border-color: transparent;
-            box-shadow: 0 24px 60px rgba(255, 85, 0, 0.4);
-        }
-
-        .sq-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.05rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .sq-quote-dark .sq-avatar {
-            background: rgba(255, 85, 0, 0.18);
-            color: var(--orange);
-        }
-
-        .sq-quote-orange .sq-avatar {
-            background: rgba(255, 255, 255, 0.25);
-            color: #fff;
-        }
-
-        .sq-quote p {
-            font-size: 1.02rem;
-            line-height: 1.6;
-            margin-bottom: 1.25rem;
-        }
-
-        .sq-quote-dark p {
-            color: #e6e8f0;
-        }
-
-        .sq-quote .who {
-            font-weight: 700;
-            font-size: 0.92rem;
-        }
-
-        .sq-quote-dark .who {
-            color: var(--orange-light);
-        }
-
-        /* ---------- FAQ ---------- */
-        .accordion-item {
-            background: var(--orange);
-            border: none;
-            border-radius: 16px !important;
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-
-        .accordion-button {
-            background: var(--orange);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.05rem;
-            box-shadow: none;
-            padding: 1.25rem 1.5rem;
-        }
-
-        .accordion-button:not(.collapsed) {
-            background: var(--orange);
-            color: #fff;
-            box-shadow: none;
-        }
-
-        .accordion-button:focus {
-            box-shadow: none;
-        }
-
-        .accordion-button::after {
-            filter: brightness(0) invert(1);
-        }
-
-        .accordion-body {
-            background: var(--orange);
-            color: rgba(255, 255, 255, 0.92);
-            padding: 0 1.5rem 1.4rem;
-            font-size: 0.98rem;
-            line-height: 1.6;
-        }
-
-        /* ---------- Trust ---------- */
-        .sq-trust {
-            background: var(--orange);
-        }
-
-        .sq-trust .num {
-            font-size: clamp(2.2rem, 5vw, 3.2rem);
-            font-weight: 900;
-            color: #fff;
-            line-height: 1;
-        }
-
-        .sq-trust .lbl {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            margin-top: 0.5rem;
-        }
-
-        /* ---------- Footer ---------- */
-        .sq-footer {
-            background: var(--orange);
-            color: rgba(255, 255, 255, 0.92);
-            padding: 4rem 0 2rem;
-        }
-
-        .sq-footer h6 {
-            color: #fff;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-        }
-
-        .sq-footer a {
-            color: rgba(255, 255, 255, 0.88);
-            text-decoration: none;
-            display: inline-block;
-            padding: 0.25rem 0;
-        }
-
-        .sq-footer a:hover {
-            color: #fff;
-        }
-
-        .sq-footer .small-tag {
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        /* ---------- Modal ---------- */
-        .modal-content {
-            background: var(--card);
-            color: #fff;
-            border: 1px solid var(--border);
-        }
-
-        @media (max-width: 767.98px) {
-            section {
-                padding: 4rem 0;
-            }
-
-            .sq-hero {
-                padding: 4rem 0 3rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupportIQ — AI-Powered Customer Support, Built for Africa</title>
+
+  <!-- Bootstrap 5 (already loaded in base — included here so the template renders standalone) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts: Inter (already loaded) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --orange:#FF5500;
+      --orange-soft:#ff7a33;
+      --orange-tint:#ffb999;
+      --bg:#111120;
+      --bg-2:#0c0c17;
+      --card:#1A1A2E;
+      --card-2:#20203a;
+      --line:rgba(255,255,255,.08);
+      --white:#ffffff;
+      --muted:#a7a7c0;
+      --muted-2:#7e7e98;
+      --radius:22px;
+      --radius-lg:28px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:var(--bg);
+      color:var(--white);
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    a{text-decoration:none}
+    .container{max-width:1200px}
+
+    .eyebrow{
+      color:var(--orange);
+      font-weight:700;
+      font-size:.82rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      margin-bottom:14px;
+    }
+    .section{position:relative;padding:110px 0;overflow:hidden}
+    .section-title{
+      font-weight:800;
+      font-size:clamp(2rem,4vw,3.1rem);
+      line-height:1.08;
+      letter-spacing:-.02em;
+      margin:0 0 18px;
+    }
+    .section-sub{color:var(--muted);font-size:1.05rem;max-width:620px;margin:0 auto}
+
+    /* Radial glow helper */
+    .glow{position:absolute;border-radius:50%;filter:blur(20px);pointer-events:none;z-index:0}
+    .section > .container{position:relative;z-index:2}
+
+    /* ===== NAVBAR ===== */
+    .navbar-iq{background:var(--orange);position:sticky;top:0;z-index:1030;box-shadow:0 6px 30px rgba(255,85,0,.22)}
+    .navbar-iq .nav-link{color:#fff;font-weight:500;font-size:.95rem;padding:.5rem 1rem;opacity:.92}
+    .navbar-iq .nav-link:hover{opacity:1}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.4rem;color:#fff;letter-spacing:-.01em}
+    .brand .wave{display:flex;align-items:flex-end;gap:3px;height:24px}
+    .brand .wave span{width:3px;background:#fff;border-radius:3px;animation:wave 1.1s ease-in-out infinite}
+    .brand .wave span:nth-child(1){height:9px;animation-delay:0s}
+    .brand .wave span:nth-child(2){height:18px;animation-delay:.12s}
+    .brand .wave span:nth-child(3){height:24px;animation-delay:.24s}
+    .brand .wave span:nth-child(4){height:14px;animation-delay:.36s}
+    .brand .wave span:nth-child(5){height:20px;animation-delay:.48s}
+    @keyframes wave{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+    .brand .iq{color:var(--orange-tint)}
+    .btn-ghost-light{color:#fff;border:1.5px solid rgba(255,255,255,.7);background:transparent;font-weight:600;border-radius:50px;padding:.5rem 1.4rem}
+    .btn-ghost-light:hover{background:rgba(255,255,255,.15);color:#fff;border-color:#fff}
+    .btn-white{background:#fff;color:var(--orange);font-weight:700;border-radius:50px;padding:.5rem 1.5rem;border:1.5px solid #fff}
+    .btn-white:hover{background:#fff;color:#e64d00;transform:translateY(-1px)}
+
+    /* ===== HERO ===== */
+    .hero{background:var(--bg);padding-top:90px;padding-bottom:120px}
+    .hero .glow-main{width:760px;height:760px;top:-220px;right:-180px;
+      background:radial-gradient(circle,rgba(255,85,0,.55) 0%,rgba(255,85,0,.18) 38%,transparent 68%);}
+    .badge-iq{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(255,85,0,.12);border:1px solid rgba(255,85,0,.4);
+      color:var(--orange-soft);font-weight:600;font-size:.85rem;
+      padding:8px 16px;border-radius:50px;margin-bottom:26px;
+    }
+    .badge-iq .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 4px rgba(255,85,0,.25)}
+    .hero h1{
+      font-weight:900;font-size:clamp(2.6rem,5.4vw,4.4rem);line-height:1.04;
+      letter-spacing:-.03em;margin:0 0 22px;max-width:14ch;
+    }
+    .hero h1 .accent{color:var(--orange)}
+    .hero-sub{color:var(--muted);font-size:1.18rem;line-height:1.6;max-width:30rem;margin:0 0 34px}
+    .btn-orange{background:var(--orange);color:#fff;font-weight:700;border-radius:50px;padding:.85rem 2rem;border:none;font-size:1.02rem;box-shadow:0 12px 30px rgba(255,85,0,.35)}
+    .btn-orange:hover{background:#ff6a1a;color:#fff;transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,85,0,.45)}
+    .btn-outline-iq{background:transparent;color:#fff;font-weight:600;border-radius:50px;padding:.85rem 2rem;border:1.5px solid rgba(255,255,255,.35);font-size:1.02rem}
+    .btn-outline-iq:hover{background:rgba(255,255,255,.08);color:#fff;border-color:#fff}
+    .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+
+    /* ===== Mac window mockup ===== */
+    .mac-window{
+      margin-top:70px;border-radius:var(--radius-lg);overflow:hidden;
+      background:var(--card);border:1px solid var(--line);
+      box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03);
+    }
+    .mac-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;background:#15152a;border-bottom:1px solid var(--line)}
+    .mac-bar .dot{width:12px;height:12px;border-radius:50%}
+    .mac-bar .r{background:#ff5f57}.mac-bar .y{background:#febc2e}.mac-bar .g{background:#28c840}
+    .mac-bar .addr{margin-left:14px;font-size:.78rem;color:var(--muted-2);background:#0e0e1d;padding:5px 14px;border-radius:8px}
+    .dash{padding:26px;display:grid;grid-template-columns:200px 1fr;gap:22px}
+    .dash-side{background:var(--bg-2);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px}
+    .dash-side .si{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:.85rem;font-weight:500}
+    .dash-side .si.active{background:rgba(255,85,0,.16);color:#fff}
+    .dash-side .si .ic{width:16px;height:16px;border-radius:5px;background:currentColor;opacity:.5}
+    .dash-side .si.active .ic{background:var(--orange);opacity:1}
+    .dash-main{display:flex;flex-direction:column;gap:18px}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .stat{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:16px}
+    .stat .lbl{color:var(--muted-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+    .stat .val{font-size:1.7rem;font-weight:800;margin-top:6px}
+    .stat .val.o{color:var(--orange)}
+    .stat .trend{font-size:.72rem;color:#28c840;font-weight:600;margin-top:2px}
+    .ticket{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:6px}
+    .ticket .th{display:flex;justify-content:space-between;padding:10px 14px;color:var(--muted-2);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+    .ticket .tr{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line)}
+    .ticket .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ff5500,#ff8a4d);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex:0 0 auto}
+    .ticket .tn{flex:1;min-width:0}
+    .ticket .tn b{font-size:.84rem;font-weight:600;display:block}
+    .ticket .tn span{font-size:.74rem;color:var(--muted-2)}
+    .pill{font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:50px}
+    .pill.resolved{background:rgba(40,200,64,.15);color:#3ddc6a}
+    .pill.ai{background:rgba(255,85,0,.16);color:var(--orange-soft)}
+    .pill.pending{background:rgba(254,188,46,.15);color:#febc2e}
+
+    /* ===== FEATURES ===== */
+    .features{background:var(--bg)}
+    .features .glow-l{width:520px;height:520px;top:120px;left:-220px;background:radial-gradient(circle,rgba(255,85,0,.30),transparent 65%)}
+    .features .glow-r{width:480px;height:480px;bottom:-120px;right:-200px;background:radial-gradient(circle,rgba(255,85,0,.24),transparent 65%)}
+    .f-card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      padding:34px 30px;height:100%;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+    }
+    .f-card:hover{transform:translateY(-6px);border-color:rgba(255,85,0,.45);box-shadow:0 24px 50px rgba(0,0,0,.4)}
+    .f-ico{
+      width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,85,0,.14);color:var(--orange);margin-bottom:22px;
+    }
+    .f-ico svg{width:28px;height:28px}
+    .f-card h3{font-size:1.22rem;font-weight:700;margin:0 0 10px}
+    .f-card p{color:var(--muted);font-size:.97rem;line-height:1.6;margin:0}
+
+    /* ===== HOW IT WORKS ===== */
+    .how{background:var(--bg-2)}
+    .how .glow-c{width:560px;height:560px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,85,0,.16),transparent 65%)}
+    .step{text-align:center;padding:0 18px;position:relative}
+    .step-num{
+      width:84px;height:84px;border-radius:50%;background:var(--orange);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;font-weight:800;color:#fff;margin:0 auto 26px;
+      box-shadow:0 14px 36px rgba(255,85,0,.4);position:relative;z-index:2;
+    }
+    .step h3{font-size:1.3rem;font-weight:700;margin:0 0 12px}
+    .step p{color:var(--muted);font-size:1rem;line-height:1.6;margin:0;max-width:300px;margin-inline:auto}
+    .step-line{position:absolute;top:42px;left:60%;width:80%;height:2px;
+      background:linear-gradient(90deg,rgba(255,85,0,.5),rgba(255,85,0,.05));z-index:1}
+
+    /* ===== PRICING ===== */
+    .pricing{background:var(--bg)}
+    .pricing .glow-c{width:640px;height:640px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,85,0,.22),transparent 62%)}
+    .price-card{
+      border-radius:var(--radius-lg);padding:38px 32px;height:100%;
+      display:flex;flex-direction:column;transition:transform .25s ease;
+    }
+    .price-card:hover{transform:translateY(-6px)}
+    .price-card.light{background:#fff;color:#16162a;border:1px solid rgba(0,0,0,.06)}
+    .price-card.featured{background:var(--orange);color:#fff;box-shadow:0 30px 70px rgba(255,85,0,.4);position:relative}
+    .price-tag-badge{position:absolute;top:22px;right:22px;background:rgba(255,255,255,.22);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:50px}
+    .price-card h3{font-size:1.3rem;font-weight:700;margin:0 0 6px}
+    .price-card.light h3{color:#16162a}
+    .price-amount{font-size:2.4rem;font-weight:900;letter-spacing:-.02em;margin:14px 0 4px;line-height:1}
+    .price-amount small{font-size:.95rem;font-weight:600;opacity:.65}
+    .price-desc{font-size:.92rem;opacity:.7;margin-bottom:26px}
+    .price-card.light .price-desc{color:#5a5a72}
+    .price-list{list-style:none;padding:0;margin:0 0 30px;flex:1;display:flex;flex-direction:column;gap:13px}
+    .price-list li{display:flex;align-items:flex-start;gap:11px;font-size:.96rem;font-weight:500}
+    .price-list .chk{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px}
+    .price-card.light .chk{background:rgba(255,85,0,.14);color:var(--orange)}
+    .price-card.featured .chk{background:rgba(255,255,255,.25);color:#fff}
+    .price-list .chk svg{width:12px;height:12px}
+    .btn-price{width:100%;border-radius:50px;padding:.82rem;font-weight:700;font-size:1rem;border:none;transition:transform .2s ease}
+    .price-card.light .btn-price{background:var(--orange);color:#fff}
+    .price-card.light .btn-price:hover{background:#e64d00;transform:translateY(-2px)}
+    .price-card.featured .btn-price{background:#fff;color:var(--orange)}
+    .price-card.featured .btn-price:hover{background:#fff;color:#e64d00;transform:translateY(-2px)}
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials{background:var(--bg-2)}
+    .testimonials .glow-c{width:680px;height:680px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,85,0,.20),transparent 60%)}
+    .t-card{border-radius:var(--radius);padding:34px 30px;height:100%;display:flex;flex-direction:column}
+    .t-card.dark{background:var(--card);border:1px solid var(--line)}
+    .t-card.orange{background:var(--orange);box-shadow:0 26px 60px rgba(255,85,0,.4)}
+    .t-av{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;margin-bottom:22px}
+    .t-card.dark .t-av{background:rgba(255,85,0,.16);color:var(--orange)}
+    .t-card.orange .t-av{background:rgba(255,255,255,.25);color:#fff}
+    .t-quote{font-size:1.05rem;line-height:1.62;font-weight:500;margin:0 0 24px;flex:1}
+    .t-card.dark .t-quote{color:#e8e8f5}
+    .t-author{font-weight:700;font-size:.95rem}
+    .t-role{font-size:.85rem;opacity:.7}
+    .t-stars{display:flex;gap:3px;margin-bottom:14px}
+    .t-stars svg{width:16px;height:16px}
+    .t-card.dark .t-stars{color:var(--orange)}
+    .t-card.orange .t-stars{color:#fff}
+
+    /* ===== FAQ ===== */
+    .faq{background:var(--bg)}
+    .faq .glow-c{width:480px;height:480px;bottom:-120px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,85,0,.16),transparent 65%)}
+    .faq-list{max-width:780px;margin:0 auto}
+    .faq-item{background:var(--orange);border-radius:18px;margin-bottom:16px;overflow:hidden;box-shadow:0 10px 30px rgba(255,85,0,.18)}
+    .faq-q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;
+      padding:22px 26px;background:transparent;border:none;color:#fff;font-weight:700;font-size:1.08rem;text-align:left;cursor:pointer}
+    .faq-q .tog{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;font-size:1.1rem;line-height:1}
+    .faq-item.open .faq-q .tog{transform:rotate(45deg)}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .faq-a p{margin:0;padding:0 26px 24px;color:rgba(255,255,255,.92);font-size:1rem;line-height:1.6}
+
+    /* ===== TRUST ===== */
+    .trust{background:var(--orange);padding:70px 0}
+    .trust-stat{text-align:center;color:#fff}
+    .trust-stat .num{font-size:clamp(2.2rem,4vw,3.2rem);font-weight:900;letter-spacing:-.02em;line-height:1}
+    .trust-stat .lbl{font-size:1rem;font-weight:500;opacity:.92;margin-top:8px}
+    .trust-divider{width:1px;background:rgba(255,255,255,.3)}
+
+    /* ===== FOOTER ===== */
+    .footer{background:var(--orange);color:#fff;padding:70px 0 30px}
+    .footer .brand{margin-bottom:16px}
+    .footer .brand .iq{color:#fff;opacity:.85}
+    .footer .brand .wave span{background:#fff}
+    .footer p.tag{color:rgba(255,255,255,.88);font-size:.95rem;line-height:1.6;max-width:280px}
+    .footer h5{font-weight:700;font-size:1.05rem;margin:0 0 18px}
+    .footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+    .footer ul a,.footer ul li{color:rgba(255,255,255,.9);font-size:.94rem}
+    .footer ul a:hover{color:#fff;text-decoration:underline}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,.25);margin-top:50px;padding-top:24px;text-align:center;color:rgba(255,255,255,.85);font-size:.9rem}
+
+    /* ===== Demo modal ===== */
+    .modal-content{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+    .modal-header{border-bottom:1px solid var(--line);padding:18px 24px}
+    .modal-title{font-weight:700}
+    .btn-close{filter:invert(1) grayscale(1)}
+    .ratio iframe{border:0}
+
+    @media (max-width:991px){
+      .dash{grid-template-columns:1fr}
+      .dash-side{flex-direction:row;flex-wrap:wrap}
+      .step-line{display:none}
+    }
+    @media (max-width:767px){
+      .section{padding:72px 0}
+      .hero{padding-top:60px;padding-bottom:80px}
+      .stat-row{grid-template-columns:1fr}
+      .trust-divider{display:none}
+      .navbar-iq .navbar-collapse{background:var(--orange);padding:16px;border-radius:0 0 16px 16px;margin:0 -12px}
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="sq-nav">
-        <div class="container">
-            <div class="navbar navbar-expand-lg py-3 px-0">
-                <a href="/" class="sq-brand">
-                    <span class="sq-logo"><i class="bi bi-soundwave"></i></span>
-                    <span>Support<span class="sq-iq">IQ</span></span>
-                </a>
-
-                <button class="navbar-toggler border-0 text-white ms-auto" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false">
-                    <i class="bi bi-list fs-2"></i>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navMenu">
-                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                    </ul>
-                    <div class="d-flex flex-column flex-lg-row gap-2 mt-3 mt-lg-0">
-                        <a href="/accounts/login/" class="btn btn-ghost-nav px-4">Login</a>
-                        <a href="/accounts/register/" class="btn btn-white px-4">Get Started</a>
-                    </div>
-                </div>
-            </div>
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar navbar-expand-lg navbar-iq py-3">
+    <div class="container">
+      <a class="brand" href="#">
+        <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
+        Support<span class="iq">IQ</span>
+      </a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav mx-lg-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+          <a href="/accounts/login/" class="btn btn-ghost-light">Login</a>
+          <a href="/accounts/register/" class="btn btn-white">Get Started</a>
         </div>
-    </nav>
-
-    <!-- HERO -->
-    <header class="sq-hero glow-right">
-        <div class="container">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-10 mx-auto text-center">
-                    <span class="sq-badge mb-4"><i class="bi bi-stars"></i>AI-powered support, built for Africa</span>
-                    <h1 class="mb-4">Resolve Customer Issues<br class="d-none d-md-block">
-                        in Seconds with <span style="color:var(--orange)">AI</span></h1>
-                    <p class="lead mx-auto mb-4">SupportIQ handles your customer emails automatically.
-                        No human required.</p>
-                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-5">
-                        <a href="/accounts/register/" class="btn btn-orange btn-lg px-4">
-                            <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
-                        </a>
-                        <button class="btn btn-outline-white btn-lg px-4" data-bs-toggle="modal"
-                            data-bs-target="#demoModal">
-                            <i class="bi bi-play-circle me-2"></i>See Demo
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mac-style dashboard mockup -->
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="sq-window">
-                        <div class="sq-window-bar">
-                            <span class="sq-dot" style="background:#ff5f57"></span>
-                            <span class="sq-dot" style="background:#febc2e"></span>
-                            <span class="sq-dot" style="background:#28c840"></span>
-                            <span class="ms-3 small" style="color:var(--muted)">
-                                <i class="bi bi-soundwave me-1" style="color:var(--orange)"></i>SupportIQ Dashboard
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <div class="row g-3">
-                                <div class="col-6 col-md-3">
-                                    <div class="sq-stat">
-                                        <span class="ico"><i class="bi bi-inbox"></i></span>
-                                        <div class="num">1,248</div>
-                                        <div class="lbl">Tickets Handled</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="sq-stat">
-                                        <span class="ico"><i class="bi bi-robot"></i></span>
-                                        <div class="num">82%</div>
-                                        <div class="lbl">Auto-Resolved</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="sq-stat">
-                                        <span class="ico"><i class="bi bi-lightning-charge"></i></span>
-                                        <div class="num">28s</div>
-                                        <div class="lbl">Avg Response</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="sq-stat">
-                                        <span class="ico"><i class="bi bi-emoji-smile"></i></span>
-                                        <div class="num">4.9/5</div>
-                                        <div class="lbl">Satisfaction</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- FEATURES -->
-    <section id="features" class="glow-left">
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="sq-eyebrow mb-2">Features</div>
-                <h2 class="sq-section-title">Features That Redefine Support</h2>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-envelope-paper"></i></span>
-                        <h5 class="mb-2">AI Email Agent</h5>
-                        <p class="mb-0">Customer emails get instant AI replies — drafted, sent, and logged
-                            automatically, around the clock.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-tags"></i></span>
-                        <h5 class="mb-2">Smart Ticketing</h5>
-                        <p class="mb-0">Auto-classify and prioritize tickets the moment they arrive, so urgent
-                            issues never wait in a queue.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-graph-up-arrow"></i></span>
-                        <h5 class="mb-2">Real-time Dashboard</h5>
-                        <p class="mb-0">Live updates for your team — new tickets and status changes appear
-                            instantly, no refresh needed.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-magic"></i></span>
-                        <h5 class="mb-2">Auto-Resolve</h5>
-                        <p class="mb-0">Routine questions are resolved end-to-end by AI, freeing your agents to
-                            focus on what truly matters.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-stars"></i></span>
-                        <h5 class="mb-2">Polish Reply</h5>
-                        <p class="mb-0">Turn rough notes into clear, on-brand responses with one click — every
-                            reply reads professional.</p>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="sq-feature">
-                        <span class="sq-feature-icon"><i class="bi bi-cpu"></i></span>
-                        <h5 class="mb-2">Auto-Classify</h5>
-                        <p class="mb-0">AI reads intent and sentiment to route every ticket to the right agent
-                            or queue, every single time.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section id="how">
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="sq-eyebrow mb-2">How It Works</div>
-                <h2 class="sq-section-title">From Email to Resolution in Seconds</h2>
-            </div>
-            <div class="row g-5 text-center">
-                <div class="col-md-4 sq-step">
-                    <span class="sq-step-num">1</span>
-                    <h5 class="mb-2">Customer sends email</h5>
-                    <p class="mb-0">A customer reaches out to your support address — no portal or login
-                        required on their end.</p>
-                </div>
-                <div class="col-md-4 sq-step">
-                    <span class="sq-step-num">2</span>
-                    <h5 class="mb-2">AI analyzes and responds in seconds</h5>
-                    <p class="mb-0">SupportIQ reads the message, classifies it, and replies instantly with an
-                        accurate, on-brand answer.</p>
-                </div>
-                <div class="col-md-4 sq-step">
-                    <span class="sq-step-num">3</span>
-                    <h5 class="mb-2">Complex issues escalated to human agents</h5>
-                    <p class="mb-0">Anything the AI can't confidently resolve is routed to your team with
-                        full context attached.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PRICING -->
-    <section id="pricing" class="glow-right">
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="sq-eyebrow mb-2">Pricing</div>
-                <h2 class="sq-section-title">Choose a Plan That Suits Your Needs</h2>
-            </div>
-            <div class="row g-4 align-items-center">
-                <!-- Starter -->
-                <div class="col-md-4">
-                    <div class="sq-price sq-price-light">
-                        <h3 class="mb-3">Starter</h3>
-                        <div class="price mb-1">15,000 <span>FCFA/month</span></div>
-                        <ul>
-                            <li><i class="bi bi-check-circle-fill"></i>Up to 3 agents</li>
-                            <li><i class="bi bi-check-circle-fill"></i>500 tickets/month</li>
-                            <li><i class="bi bi-check-circle-fill"></i>AI auto-resolve</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Email support</li>
-                        </ul>
-                        <a href="/accounts/register/" class="btn btn-orange w-100 px-4">Get Started</a>
-                    </div>
-                </div>
-                <!-- Professional (featured) -->
-                <div class="col-md-4">
-                    <div class="sq-price sq-price-featured">
-                        <span class="sq-tag">Most Popular</span>
-                        <h3 class="mb-3">Professional</h3>
-                        <div class="price mb-1">35,000 <span>FCFA/month</span></div>
-                        <ul>
-                            <li><i class="bi bi-check-circle-fill"></i>Up to 10 agents</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Unlimited tickets</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Full AI suite</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Priority support</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Real-time dashboard</li>
-                        </ul>
-                        <a href="/accounts/register/" class="btn btn-white w-100 px-4">Get Started</a>
-                    </div>
-                </div>
-                <!-- Enterprise -->
-                <div class="col-md-4">
-                    <div class="sq-price sq-price-light">
-                        <h3 class="mb-3">Enterprise</h3>
-                        <div class="price mb-1">75,000 <span>FCFA/month</span></div>
-                        <ul>
-                            <li><i class="bi bi-check-circle-fill"></i>Unlimited agents</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Custom integrations</li>
-                            <li><i class="bi bi-check-circle-fill"></i>Dedicated account manager</li>
-                            <li><i class="bi bi-check-circle-fill"></i>24/7 support</li>
-                            <li><i class="bi bi-check-circle-fill"></i>SLA management</li>
-                        </ul>
-                        <a href="/accounts/register/" class="btn btn-orange w-100 px-4">Get Started</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TESTIMONIALS -->
-    <section class="glow-center">
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="sq-eyebrow mb-2">Testimonials</div>
-                <h2 class="sq-section-title">Hear What Our Clients Have to Say</h2>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="sq-quote sq-quote-dark">
-                        <span class="sq-avatar">MB</span>
-                        <p>"SupportIQ resolved 80% of our customer emails automatically. Our team now focuses
-                            on complex issues only."</p>
-                        <div class="who">— MTN Business Customer</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="sq-quote sq-quote-orange">
-                        <span class="sq-avatar">UI</span>
-                        <p>"We reduced our response time from 24 hours to under 30 seconds. Incredible
-                            technology."</p>
-                        <div class="who">— University IT Department</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="sq-quote sq-quote-dark">
-                        <span class="sq-avatar">HA</span>
-                        <p>"The AI classification is spot on. Tickets go straight to the right agent every
-                            time."</p>
-                        <div class="who">— Hospital Admin Team</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ -->
-    <section>
-        <div class="container">
-            <div class="text-center mb-5">
-                <div class="sq-eyebrow mb-2">FAQ</div>
-                <h2 class="sq-section-title">Your Questions, Answered Clearly</h2>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#faq1">
-                                    How does the AI email agent work?
-                                </button>
-                            </h2>
-                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    SupportIQ connects to your support inbox, reads each incoming email, understands the
-                                    intent, and drafts an accurate reply in seconds. Routine messages are answered
-                                    automatically, while anything complex is escalated to your human agents.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#faq2">
-                                    Is my customer data secure?
-                                </button>
-                            </h2>
-                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Yes. SupportIQ is built with enterprise-grade security, backed by 49 automated
-                                    security tests and a 99.9% uptime SLA. Your data is encrypted in transit and at rest.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#faq3">
-                                    Can I upgrade or downgrade my plan?
-                                </button>
-                            </h2>
-                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Absolutely. You can change your plan at any time from your dashboard. Upgrades take
-                                    effect immediately, and downgrades apply at the start of your next billing cycle.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#faq4">
-                                    Does SupportIQ work in French and English?
-                                </button>
-                            </h2>
-                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Yes. SupportIQ understands and responds in both French and English, making it ideal
-                                    for bilingual African markets and customers across the continent.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TRUST -->
-    <section class="sq-trust">
-        <div class="container">
-            <div class="row g-4 text-center">
-                <div class="col-md-4">
-                    <div class="num">49</div>
-                    <div class="lbl">Automated Security Tests</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="num">99.9%</div>
-                    <div class="lbl">Uptime SLA</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="num">&lt; 30s</div>
-                    <div class="lbl">AI Response Time</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer id="contact" class="sq-footer">
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-4">
-                    <a href="/" class="sq-brand mb-3">
-                        <span class="sq-logo"><i class="bi bi-soundwave"></i></span>
-                        <span>Support<span class="sq-iq">IQ</span></span>
-                    </a>
-                    <p class="small-tag mb-0 mt-2">AI-powered customer support for African businesses. Resolve
-                        issues in seconds — no human required.</p>
-                </div>
-                <div class="col-6 col-md-2">
-                    <h6>Quick Links</h6>
-                    <a href="#features">Features</a><br>
-                    <a href="#how">How It Works</a><br>
-                    <a href="#pricing">Pricing</a><br>
-                    <a href="/accounts/register/">Get Started</a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <h6>Contact Us</h6>
-                    <a href="mailto:support@mg.simedelonney.com">support@mg.simedelonney.com</a><br>
-                    <a href="/accounts/login/">Login</a><br>
-                    <a href="/accounts/register/">Register</a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <h6>Legal</h6>
-                    <a href="#">Privacy Policy</a><br>
-                    <a href="#">Terms of Service</a><br>
-                    <a href="#">SLA Agreement</a>
-                </div>
-            </div>
-            <hr class="my-4" style="border-color:rgba(255,255,255,0.25)">
-            <div class="text-center small-tag">&copy; 2026 SupportIQ. All Rights Reserved.</div>
-        </div>
-    </footer>
-
-    <!-- Demo Modal -->
-    <div class="modal fade" id="demoModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="border-radius:20px;overflow:hidden">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-white">
-                        <i class="bi bi-play-circle me-2" style="color:var(--orange)"></i>See SupportIQ in Action
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body pt-2">
-                    <div class="ratio ratio-16x9 mb-3">
-                        <iframe src="https://youtube.com/embed/-fn8rrAkBtY" title="SupportIQ Demo" allowfullscreen
-                            style="border-radius:12px">
-                        </iframe>
-                    </div>
-                    <p class="text-center mb-0 small" style="color:var(--muted)">
-                        <i class="bi bi-stars me-1" style="color:var(--orange)"></i>
-                        Watch how AI resolves customer tickets automatically in seconds
-                    </p>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <a href="/accounts/register/" class="btn btn-orange px-4">
-                        <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
-                    </a>
-                    <button type="button" class="btn btn-outline-white" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- ===================== HERO ===================== -->
+  <header class="hero section">
+    <div class="glow glow-main"></div>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-10">
+          <div class="badge-iq"><span class="dot"></span>AI-powered support, built for Africa</div>
+          <h1>Resolve Customer Issues in <span class="accent">Seconds</span> with AI</h1>
+          <p class="hero-sub">SupportIQ handles your customer emails automatically. No human required.</p>
+          <div class="hero-cta">
+            <a href="/accounts/register/" class="btn btn-orange">Get Started Free</a>
+            <button type="button" class="btn btn-outline-iq" data-bs-toggle="modal" data-bs-target="#demoModal">
+              ▸ See Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mac-style dashboard mockup -->
+      <div class="row">
+        <div class="col-12">
+          <div class="mac-window">
+            <div class="mac-bar">
+              <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+              <span class="addr">app.supportiq.africa/dashboard</span>
+            </div>
+            <div class="dash">
+              <aside class="dash-side">
+                <div class="si active"><span class="ic"></span>Dashboard</div>
+                <div class="si"><span class="ic"></span>Tickets</div>
+                <div class="si"><span class="ic"></span>AI Agent</div>
+                <div class="si"><span class="ic"></span>Analytics</div>
+                <div class="si"><span class="ic"></span>Settings</div>
+              </aside>
+              <div class="dash-main">
+                <div class="stat-row">
+                  <div class="stat"><div class="lbl">Auto-Resolved</div><div class="val o">1,284</div><div class="trend">▲ 18% this week</div></div>
+                  <div class="stat"><div class="lbl">Avg Response</div><div class="val">28s</div><div class="trend">▲ 4× faster</div></div>
+                  <div class="stat"><div class="lbl">Open Tickets</div><div class="val">37</div><div class="trend">▼ 12% today</div></div>
+                </div>
+                <div class="ticket">
+                  <div class="th"><span>Recent Tickets</span><span>Status</span></div>
+                  <div class="tr">
+                    <div class="av">AK</div>
+                    <div class="tn"><b>Refund not received</b><span>amina.k@example.com · 2 min ago</span></div>
+                    <span class="pill resolved">Resolved</span>
+                  </div>
+                  <div class="tr">
+                    <div class="av">JM</div>
+                    <div class="tn"><b>Can't reset password</b><span>j.mbeki@example.com · 5 min ago</span></div>
+                    <span class="pill ai">AI Handling</span>
+                  </div>
+                  <div class="tr">
+                    <div class="av">FN</div>
+                    <div class="tn"><b>Billing discrepancy</b><span>fatou.n@example.com · 9 min ago</span></div>
+                    <span class="pill pending">Escalated</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section class="features section" id="features">
+    <div class="glow glow-l"></div>
+    <div class="glow glow-r"></div>
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">Features</div>
+        <h2 class="section-title">Features That Redefine Support</h2>
+        <p class="section-sub">Everything you need to automate, organise and elevate customer support — powered end-to-end by AI.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 6 9 7 9-7"/></svg>
+            </div>
+            <h3>AI Email Agent</h3>
+            <p>An autonomous agent reads, understands and replies to customer emails 24/7 — in natural, on-brand language.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+            </div>
+            <h3>Smart Ticketing</h3>
+            <p>Every conversation becomes a structured ticket — tagged, prioritised and tracked from first reply to resolution.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg>
+            </div>
+            <h3>Real-time Dashboard</h3>
+            <p>Live metrics on resolution rates, response times and agent load — so you always know how support is performing.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2m0 20v-2M9 4l1.5 1.5M4 9l1.5 1.5"/><path d="m14 7 3 3L7 20l-3-3Z"/><path d="M18 2.5 19 4l1.5.5L19 5l-1 1.5L17 5l-1.5-.5L17 4Z"/></svg>
+            </div>
+            <h3>Auto-Resolve</h3>
+            <p>Routine questions are closed instantly without human input — the AI drafts, verifies and sends the resolution.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 4.1L18 9l-4.1 1.9L12 15l-1.9-4.1L6 9l4.1-1.9Z"/><path d="M19 14l.8 1.7L21.5 16.5l-1.7.8L19 19l-.8-1.7L16.5 16.5l1.7-.8Z"/></svg>
+            </div>
+            <h3>Polish Reply</h3>
+            <p>Turn rough notes into clear, empathetic responses. Agents draft fast; the AI refines tone, grammar and clarity.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="f-card">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4 4 4 0 0 0-1 7.9A3.5 3.5 0 0 0 10 20a2 2 0 0 0 4 0 3.5 3.5 0 0 0 3-6.1A4 4 0 0 0 16 6a4 4 0 0 0-4-4Z"/><path d="M12 6v14M8 10h8"/></svg>
+            </div>
+            <h3>Auto-Classify</h3>
+            <p>Incoming requests are instantly categorised by intent and routed to the right team or AI flow — no manual triage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="how section" id="how">
+    <div class="glow glow-c"></div>
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">How It Works</div>
+        <h2 class="section-title">From Email to Resolution in Seconds</h2>
+        <p class="section-sub">A fully automated pipeline that only involves your team when it truly needs to.</p>
+      </div>
+      <div class="row g-5 mt-2">
+        <div class="col-md-4">
+          <div class="step">
+            <span class="step-line"></span>
+            <div class="step-num">1</div>
+            <h3>Customer sends email</h3>
+            <p>A customer emails your support inbox just like they always have — nothing changes for them.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step">
+            <span class="step-line"></span>
+            <div class="step-num">2</div>
+            <h3>AI analyzes and responds</h3>
+            <p>SupportIQ reads the message, understands intent, and replies with an accurate answer in seconds.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Complex issues escalated</h3>
+            <p>When a request needs a human, it's routed to the right agent with full context attached.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRICING ===================== -->
+  <section class="pricing section" id="pricing">
+    <div class="glow glow-c"></div>
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">Pricing</div>
+        <h2 class="section-title">Choose a Plan That Suits Your Needs</h2>
+        <p class="section-sub">Transparent pricing in FCFA. Upgrade, downgrade or cancel anytime.</p>
+      </div>
+      <div class="row g-4 align-items-stretch">
+        <!-- Starter -->
+        <div class="col-lg-4">
+          <div class="price-card light">
+            <h3>Starter</h3>
+            <p class="price-desc">For small teams getting started with AI support.</p>
+            <div class="price-amount">15,000 <small>FCFA/month</small></div>
+            <ul class="price-list">
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Up to 3 agents</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>500 tickets/month</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>AI auto-resolve</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Email support</li>
+            </ul>
+            <a href="/accounts/register/" class="btn btn-price">Get Started</a>
+          </div>
+        </div>
+        <!-- Professional (featured) -->
+        <div class="col-lg-4">
+          <div class="price-card featured">
+            <span class="price-tag-badge">Most Popular</span>
+            <h3>Professional</h3>
+            <p class="price-desc">For growing teams that need the full AI suite.</p>
+            <div class="price-amount">35,000 <small>FCFA/month</small></div>
+            <ul class="price-list">
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Up to 10 agents</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Unlimited tickets</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Full AI suite</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Priority support</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Real-time dashboard</li>
+            </ul>
+            <a href="/accounts/register/" class="btn btn-price">Get Started</a>
+          </div>
+        </div>
+        <!-- Enterprise -->
+        <div class="col-lg-4">
+          <div class="price-card light">
+            <h3>Enterprise</h3>
+            <p class="price-desc">For large organisations with advanced needs.</p>
+            <div class="price-amount">75,000 <small>FCFA/month</small></div>
+            <ul class="price-list">
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Unlimited agents</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Custom integrations</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Dedicated account manager</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>24/7 support</li>
+              <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>SLA management</li>
+            </ul>
+            <a href="/accounts/register/" class="btn btn-price">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIALS ===================== -->
+  <section class="testimonials section">
+    <div class="glow glow-c"></div>
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">Testimonials</div>
+        <h2 class="section-title">Hear What Our Clients Have to Say</h2>
+      </div>
+      <div class="row g-4 align-items-stretch">
+        <div class="col-lg-4">
+          <div class="t-card dark">
+            <div class="t-av">MB</div>
+            <div class="t-stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg>
+            </div>
+            <p class="t-quote">"SupportIQ resolved 80% of our customer emails automatically. Our team now focuses on complex issues only."</p>
+            <div class="t-author">MTN Business Customer</div>
+            <div class="t-role">Telecommunications</div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="t-card orange">
+            <div class="t-av">UI</div>
+            <div class="t-stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg>
+            </div>
+            <p class="t-quote">"We reduced our response time from 24 hours to under 30 seconds. Incredible technology."</p>
+            <div class="t-author">University IT Department</div>
+            <div class="t-role">Higher Education</div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="t-card dark">
+            <div class="t-av">HA</div>
+            <div class="t-stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1Z"/></svg>
+            </div>
+            <p class="t-quote">"The AI classification is spot on. Tickets go straight to the right agent every time."</p>
+            <div class="t-author">Hospital Admin Team</div>
+            <div class="t-role">Healthcare</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section class="faq section">
+    <div class="glow glow-c"></div>
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="eyebrow">FAQ</div>
+        <h2 class="section-title">Your Questions, Answered Clearly</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q" type="button"><span>How does the AI email agent work?</span><span class="tog">+</span></button>
+          <div class="faq-a"><p>SupportIQ connects to your support inbox, reads each incoming email, understands the customer's intent using AI, and drafts an accurate reply. Simple requests are resolved and sent automatically, while anything complex is escalated to a human agent with full context.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button"><span>Is my customer data secure?</span><span class="tog">+</span></button>
+          <div class="faq-a"><p>Yes. All data is encrypted in transit and at rest, hosted on secure infrastructure, and never used to train third-party models. We run continuous security testing and follow strict access controls to keep your customers' information safe.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button"><span>Can I upgrade or downgrade my plan?</span><span class="tog">+</span></button>
+          <div class="faq-a"><p>Absolutely. You can change your plan at any time from your dashboard. Upgrades take effect immediately and downgrades apply at the start of your next billing cycle — no hidden fees, no long-term lock-in.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button"><span>Does SupportIQ work in French and English?</span><span class="tog">+</span></button>
+          <div class="faq-a"><p>Yes. SupportIQ is fully bilingual and detects the language of each message automatically, replying to customers in French or English as appropriate — ideal for teams serving multilingual markets across Africa.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TRUST ===================== -->
+  <section class="trust">
+    <div class="container">
+      <div class="row align-items-center text-center g-0">
+        <div class="col-md"><div class="trust-stat"><div class="num">49</div><div class="lbl">Automated Security Tests</div></div></div>
+        <div class="col-md-auto d-none d-md-block"><div class="trust-divider" style="height:60px"></div></div>
+        <div class="col-md"><div class="trust-stat"><div class="num">99.9%</div><div class="lbl">Uptime SLA</div></div></div>
+        <div class="col-md-auto d-none d-md-block"><div class="trust-divider" style="height:60px"></div></div>
+        <div class="col-md"><div class="trust-stat"><div class="num">&lt; 30s</div><div class="lbl">AI Response Time</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <a class="brand" href="#">
+            <span class="wave"><span></span><span></span><span></span><span></span><span></span></span>
+            Support<span class="iq">IQ</span>
+          </a>
+          <p class="tag">AI-powered customer support, built for Africa. Resolve issues in seconds — no human required.</p>
+        </div>
+        <div class="col-lg-2 col-md-6 col-6">
+          <h5>Quick Links</h5>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="/accounts/register/">Get Started</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6 col-6">
+          <h5>Contact Us</h5>
+          <ul>
+            <li><a href="mailto:support@mg.simedelonney.com">support@mg.simedelonney.com</a></li>
+            <li>Antananarivo, Madagascar</li>
+            <li><a href="/accounts/login/">Login to your account</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Data Protection</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 SupportIQ. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <!-- ===================== DEMO MODAL (YouTube embed) ===================== -->
+  <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="demoModalLabel">SupportIQ Demo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="ratio ratio-16x9">
+            <iframe id="demoVideo" src="" title="SupportIQ Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS (already loaded in base) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-q').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var item = btn.closest('.faq-item');
+        var ans = item.querySelector('.faq-a');
+        var isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(function(o){
+          o.classList.remove('open');
+          o.querySelector('.faq-a').style.maxHeight = null;
+        });
+        if(!isOpen){
+          item.classList.add('open');
+          ans.style.maxHeight = ans.scrollHeight + 'px';
+        }
+      });
+    });
+
+    // Demo modal: load YouTube only on open, unload on close (prevents background audio)
+    var demoModal = document.getElementById('demoModal');
+    var demoVideo = document.getElementById('demoVideo');
+    var DEMO_URL = 'https://www.youtube.com/embed/-fn8rrAkBtY?autoplay=1&rel=0';
+    if(demoModal){
+      demoModal.addEventListener('shown.bs.modal', function(){ demoVideo.src = DEMO_URL; });
+      demoModal.addEventListener('hidden.bs.modal', function(){ demoVideo.src = ''; });
+    }
+  </script>
 </body>
-
 </html>
