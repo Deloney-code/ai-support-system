@@ -47,18 +47,12 @@
 
                 <!-- Status / Priority / Category pills -->
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    <span class="pill
-                        {% if ticket.status == 'open' %}pill-open
-                        {% elif ticket.status == 'in_progress' %}pill-progress
-                        {% elif ticket.status == 'resolved' %}pill-resolved
-                        {% else %}pill-closed{% endif %}">
+                    <span
+                        class="pill {% if ticket.status == 'open' %}pill-open{% elif ticket.status == 'in_progress' %}pill-progress{% elif ticket.status == 'resolved' %}pill-resolved{% else %}pill-closed{% endif %}">
                         <span class="dot"></span>{{ ticket.get_status_display }}
                     </span>
-                    <span class="pill
-                        {% if ticket.priority == 'critical' %}pill-critical
-                        {% elif ticket.priority == 'high' %}pill-high
-                        {% elif ticket.priority == 'medium' %}pill-medium
-                        {% else %}pill-low{% endif %}">
+                    <span
+                        class="pill {% if ticket.priority == 'critical' %}pill-critical{% elif ticket.priority == 'high' %}pill-high{% elif ticket.priority == 'medium' %}pill-medium{% else %}pill-low{% endif %}">
                         <i class="bi bi-flag-fill"></i>{{ ticket.get_priority_display }}
                     </span>
                     <span class="pill pill-category">
@@ -97,8 +91,9 @@
 
                 <!-- Description -->
                 <h6 class="fw-semibold mb-2">Description</h6>
-                <div class="rounded-3 p-3 sq-richtext" style="background:var(--bg);border:1px solid var(--border)">
-                    {{ ticket.description|linebreaks }}
+                <div class="rounded-3 p-3 sq-richtext"
+                    style="background:var(--surface-2);border:1px solid var(--border)">
+                    {{ ticket.description|linebreaksbr }}
                 </div>
             </div>
         </div>
@@ -113,17 +108,30 @@
                 {% for comment in comments %}
                 <div class="d-flex mb-4">
                     <div class="flex-shrink-0">
+                        {% if comment.author.username == 'support-bot' %}
+                        <span class="sq-avatar"
+                            style="width:40px;height:40px;background:linear-gradient(135deg,#FF5500,#ff8a4d)">
+                            <i class="bi bi-stars"></i>
+                        </span>
+                        {% else %}
                         <span class="sq-avatar" style="width:40px;height:40px">
                             {{ comment.author.username|first|upper }}
                         </span>
+                        {% endif %}
                     </div>
                     <div class="ms-3 flex-grow-1">
-                        <div class="rounded-3 p-3" style="background:var(--bg);border:1px solid var(--border)">
+                        <div class="rounded-3 p-3" style="background:var(--surface-2);border:1px solid var(--border)">
                             <div class="d-flex justify-content-between mb-1">
-                                <strong>{{ comment.author.username }}</strong>
+                                <strong>
+                                    {% if comment.author.username == 'support-bot' %}
+                                    <span style="color:var(--brand)"><i class="bi bi-stars me-1"></i>SupportIQ AI</span>
+                                    {% else %}
+                                    {{ comment.author.username }}
+                                    {% endif %}
+                                </strong>
                                 <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
                             </div>
-                            <div class="mb-0 sq-richtext">{{ comment.body|linebreaks }}</div>
+                            <div class="mb-0 sq-richtext">{{ comment.body|linebreaksbr }}</div>
                         </div>
                     </div>
                 </div>
