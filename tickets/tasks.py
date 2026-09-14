@@ -12,6 +12,10 @@ def send_ticket_confirmation_email(self, ticket_id):
         from .models import Ticket
         ticket = Ticket.objects.select_related('owner').get(pk=ticket_id)
 
+        if not ticket.owner.email:
+            logger.info(f"No email for ticket #{ticket_id} owner, skipping")
+            return
+
         send_mail(
             subject=f"Ticket #{ticket.pk} received — {ticket.title}",
             message=f"""Hi {ticket.owner.first_name or ticket.owner.username},
@@ -50,18 +54,20 @@ def auto_resolve_ticket(self, ticket_id):
         if ticket.status != 'open':
             return
 
+        # Get or create the AI support bot user
+        system_user, _ = User.objects.get_or_create(
+            username='support-bot',
+            defaults={
+                'email': 'bot@supportiq.com',
+                'role': 'agent',
+                'is_active': True,
+            }
+        )
+
         result = auto_resolve_check(ticket.title, ticket.description)
 
         if result['can_resolve'] and result['suggested_reply']:
-            system_user, _ = User.objects.get_or_create(
-                username='support-bot',
-                defaults={
-                    'email': 'bot@support.com',
-                    'role': 'agent',
-                    'is_active': True,
-                }
-            )
-
+            # AI can resolve — post reply and close ticket
             TicketComment.objects.create(
                 ticket=ticket,
                 author=system_user,
@@ -69,12 +75,37 @@ def auto_resolve_ticket(self, ticket_id):
             )
 
             ticket.status = 'resolved'
+            ticket.assigned_to = system_user
             ticket.save()
-            from .broadcasts import broadcast_ticket_update
-            broadcast_ticket_update(ticket)
 
             logger.info(f"Ticket #{ticket_id} auto-resolved by AI")
-            send_ticket_resolution_email.delay(ticket_id)
+
+            if ticket.owner.email:
+                send_ticket_resolution_email.delay(ticket_id)
+
+        else:
+            # AI cannot resolve — post acknowledgment and escalate
+            TicketComment.objects.create(
+                ticket=ticket,
+                author=system_user,
+                body=f"""Hi {ticket.owner.first_name or ticket.owner.username},
+
+Thank you for reaching out to SupportIQ. I have reviewed your request regarding "{ticket.title}".
+
+This issue requires attention from one of our specialist agents. I have escalated your ticket to our support team who will review it and get back to you shortly.
+
+In the meantime, please feel free to add any additional information or screenshots that might help us resolve your issue faster.
+
+Your ticket reference is #{ticket.pk}. Please keep this for your records.
+
+Best regards,
+SupportIQ AI Assistant"""
+            )
+
+            ticket.status = 'in_progress'
+            ticket.save()
+
+            logger.info(f"Ticket #{ticket_id} escalated to human agent by AI")
 
     except Exception as exc:
         logger.error(f"Auto-resolve failed for ticket #{ticket_id}: {exc}")
@@ -86,6 +117,9 @@ def send_ticket_resolution_email(self, ticket_id):
     try:
         from .models import Ticket
         ticket = Ticket.objects.select_related('owner').get(pk=ticket_id)
+
+        if not ticket.owner.email:
+            return
 
         send_mail(
             subject=f"Ticket #{ticket.pk} resolved — {ticket.title}",
@@ -104,6 +138,7 @@ Thank you.
             recipient_list=[ticket.owner.email],
             fail_silently=False,
         )
+        logger.info(f"Resolution email sent for ticket #{ticket_id}")
 
     except Exception as exc:
         logger.error(f"Resolution email failed for ticket #{ticket_id}: {exc}")
@@ -128,131 +163,61 @@ def classify_new_ticket(ticket_id):
     except Exception as exc:
         logger.error(f"Classification failed for ticket #{ticket_id}: {exc}")
 
+
 @shared_task(bind=True, max_retries=3)
 def process_inbound_email(self, inbound_email_id):
-    """
-    Processes an inbound email from Mailgun:
-    1. Creates a ticket from the email
-    2. Runs AI to attempt auto-resolution
-    3. Sends reply back to customer
-    4. Escalates to agent if AI cannot resolve
-    """
     try:
         from .models import InboundEmail, Ticket, TicketComment
-        from .ai_service import generate_email_reply, classify_ticket
+        from .ai_service import auto_resolve_check, generate_email_reply
         from django.contrib.auth import get_user_model
-        import re
 
         User = get_user_model()
         inbound = InboundEmail.objects.get(pk=inbound_email_id)
 
-        if inbound.processed:
-            return
-
-        # Get or create a customer account for this email sender
-        sender_name = inbound.sender.split('@')[0].replace('.', ' ').title()
-        customer, created = User.objects.get_or_create(
-            email=inbound.sender,
-            defaults={
-                'username': re.sub(r'[^a-zA-Z0-9]', '_', inbound.sender.split('@')[0])[:30],
-                'first_name': sender_name.split()[0] if ' ' in sender_name else sender_name,
-                'role': 'customer',
-            }
-        )
-
-        if created:
-            customer.set_unusable_password()
-            customer.save()
-
-        # Get or create support bot user
-        bot_user, _ = User.objects.get_or_create(
+        system_user, _ = User.objects.get_or_create(
             username='support-bot',
             defaults={
-                'email': 'bot@support.com',
+                'email': 'bot@supportiq.com',
                 'role': 'agent',
                 'is_active': True,
             }
         )
 
-        # Classify the ticket
-        classification = classify_ticket(inbound.subject, inbound.body)
+        customer, _ = User.objects.get_or_create(
+            email=inbound.sender,
+            defaults={
+                'username': inbound.sender.split('@')[0][:30],
+                'role': 'customer',
+                'is_active': True,
+            }
+        )
 
-        # Create the ticket
         ticket = Ticket.objects.create(
-            owner=customer,
-            title=inbound.subject[:200],
+            title=inbound.subject or 'Email Support Request',
             description=inbound.body,
-            category=classification['category'],
-            priority=classification['priority'],
+            owner=customer,
+            category='general',
+            priority='medium',
             status='open',
         )
 
-        inbound.ticket = ticket
-        inbound.save()
+        result = auto_resolve_check(ticket.title, ticket.description)
 
-        # Broadcast new ticket to agents dashboard
-        from .broadcasts import broadcast_new_ticket
-        broadcast_new_ticket(ticket)
-
-        # Run AI to attempt auto-resolution
-        ai_result = generate_email_reply(
-            ticket.title,
-            ticket.description,
-            sender_name
-        )
-
-        if ai_result['can_resolve'] and ai_result['confidence'] in ['high', 'medium']:
-            # AI can handle it — post reply and resolve ticket
+        if result['can_resolve'] and result['suggested_reply']:
             TicketComment.objects.create(
                 ticket=ticket,
-                author=bot_user,
-                body=f"[AI Auto-Reply]\n{ai_result['reply']}"
+                author=system_user,
+                body=result['suggested_reply']
             )
             ticket.status = 'resolved'
+            ticket.assigned_to = system_user
             ticket.save()
-
-            # Send email reply back to customer
-            send_email_reply.delay(
-                to_email=inbound.sender,
-                to_name=sender_name,
-                subject=f"Re: {inbound.subject}",
-                body=ai_result['reply'],
-                ticket_id=ticket.pk
-            )
 
             logger.info(f"Email ticket #{ticket.pk} auto-resolved by AI")
-
+            send_email_reply.delay(ticket.pk, inbound.sender, result['suggested_reply'])
         else:
-            # AI cannot resolve — escalate to human agent
-            ticket.status = 'open'
+            ticket.status = 'in_progress'
             ticket.save()
-
-            TicketComment.objects.create(
-                ticket=ticket,
-                author=bot_user,
-                body="[AI Agent] This ticket requires human attention and has been escalated to our support team."
-            )
-
-            # Send acknowledgement email to customer
-            send_email_reply.delay(
-                to_email=inbound.sender,
-                to_name=sender_name,
-                subject=f"Re: {inbound.subject}",
-                body=f"""Hi {sender_name},
-
-Thank you for contacting our support team.
-
-We have received your message and created a support ticket (#{ticket.pk}) for you.
-One of our agents will review your case and get back to you shortly.
-
-In the meantime, you can track your ticket status by logging into our support portal.
-
-Best regards,
-Support Team""",
-                ticket_id=ticket.pk
-            )
-
-            logger.info(f"Email ticket #{ticket.pk} escalated to human agent")
 
         inbound.processed = True
         inbound.save()
@@ -263,17 +228,53 @@ Support Team""",
 
 
 @shared_task(bind=True, max_retries=3)
-def send_email_reply(self, to_email, to_name, subject, body, ticket_id):
-    """Sends an email reply back to the customer."""
+def send_email_reply(self, ticket_id, recipient_email, reply_text):
     try:
+        from .models import Ticket
+        ticket = Ticket.objects.get(pk=ticket_id)
+
         send_mail(
-            subject=subject,
-            message=body,
+            subject=f"Re: {ticket.title}",
+            message=reply_text,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[to_email],
+            recipient_list=[recipient_email],
             fail_silently=False,
         )
-        logger.info(f"Email reply sent to {to_email} for ticket #{ticket_id}")
+        logger.info(f"Email reply sent to {recipient_email} for ticket #{ticket_id}")
+
     except Exception as exc:
-        logger.error(f"Failed to send email reply to {to_email}: {exc}")
+        logger.error(f"Failed to send email reply for ticket #{ticket_id}: {exc}")
+        raise self.retry(exc=exc, countdown=60)
+
+
+@shared_task(bind=True, max_retries=3)
+def send_ticket_resolution_email(self, ticket_id):
+    try:
+        from .models import Ticket
+        ticket = Ticket.objects.select_related('owner').get(pk=ticket_id)
+
+        if not ticket.owner.email:
+            return
+
+        send_mail(
+            subject=f"Ticket #{ticket.pk} resolved — {ticket.title}",
+            message=f"""Hi {ticket.owner.first_name or ticket.owner.username},
+
+Good news! Your support ticket has been resolved.
+
+Ticket: {ticket.title}
+
+Please log in to view the full resolution details.
+If you need further assistance, feel free to open a new ticket.
+
+Thank you.
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[ticket.owner.email],
+            fail_silently=False,
+        )
+        logger.info(f"Resolution email sent for ticket #{ticket_id}")
+
+    except Exception as exc:
+        logger.error(f"Resolution email failed for ticket #{ticket_id}: {exc}")
         raise self.retry(exc=exc, countdown=60)
