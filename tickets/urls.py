@@ -15,4 +15,5 @@ urlpatterns = [
     path('<int:pk>/ai/summarize/', views.ai_summarize, name='ai_summarize'),
     path('<int:pk>/ai/classify/', views.ai_classify, name='ai_classify'),
     path('<int:pk>/ai/auto-resolve/', views.ai_auto_resolve, name='ai_auto_resolve'),
+    path('webhook/mailgun/', views.mailgun_webhook, name='mailgun_webhook'),
 ]

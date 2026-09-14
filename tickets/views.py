@@ -2,11 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.views.decorators.http import require_http_methods, require_POST
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from .models import Ticket, TicketComment
 from .forms import TicketForm, TicketCommentForm, TicketStatusForm
 from . import ai_service
+from .broadcasts import broadcast_new_ticket, broadcast_ticket_update
+from .tasks import process_inbound_email
+import hashlib
+import hmac
+import time
 
 
 def check_ticket_owner_or_agent(user, ticket):
@@ -21,8 +28,15 @@ def dashboard(request):
     else:
         tickets = Ticket.objects.filter(owner=request.user)
 
+    # Paginate the ticket list — 15 per page.
+    paginator = Paginator(tickets, 15)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
+        # `tickets` stays the full queryset (used for counts and relied on by tests).
         'tickets': tickets,
+        'page_obj': page_obj,
+        'total_count': paginator.count,
         'open_count': tickets.filter(status='open').count(),
         'in_progress_count': tickets.filter(status='in_progress').count(),
         'resolved_count': tickets.filter(status='resolved').count(),
@@ -40,6 +54,7 @@ def ticket_create(request):
             ticket = form.save(commit=False)
             ticket.owner = request.user
             ticket.save()
+            broadcast_new_ticket(ticket)
 
             from .tasks import (
                 send_ticket_confirmation_email,
@@ -131,7 +146,8 @@ def ticket_status_update(request, pk):
     form = TicketStatusForm(request.POST, instance=ticket)
 
     if form.is_valid():
-        form.save()
+        updated_ticket = form.save()
+        broadcast_ticket_update(updated_ticket)
         messages.success(request, "Ticket status updated.")
     else:
         messages.error(request, "Invalid status update.")
@@ -221,3 +237,69 @@ def ai_auto_resolve(request, pk):
         return JsonResponse(result)
     except Exception:
         return JsonResponse({'error': 'AI service unavailable.'}, status=503)
+
+        import hashlib
+import hmac
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@require_POST
+def mailgun_webhook(request):
+    """
+    Receives inbound emails from Mailgun.
+    Verifies the Mailgun signature before processing.
+    """
+    from .models import InboundEmail
+    from .tasks import process_inbound_email
+    import time
+
+    # Verify Mailgun signature
+    token = request.POST.get('token', '')
+    timestamp = request.POST.get('timestamp', '')
+    signature = request.POST.get('signature', '')
+
+    mailgun_api_key = settings.MAILGUN_API_KEY
+
+    # Fail closed: if no signing key is configured, refuse to process the
+    # webhook rather than accepting unauthenticated, forgeable requests.
+    if not mailgun_api_key:
+        return JsonResponse({'error': 'Webhook not configured'}, status=503)
+
+    if not (token and timestamp and signature):
+        return JsonResponse({'error': 'Missing signature fields'}, status=403)
+
+    # Reject replays (and bad timestamps) before doing crypto work.
+    try:
+        if abs(time.time() - int(timestamp)) > 300:
+            return JsonResponse({'error': 'Timestamp expired'}, status=403)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid timestamp'}, status=403)
+
+    value = f"{timestamp}{token}".encode('utf-8')
+    expected = hmac.new(
+        mailgun_api_key.encode('utf-8'),
+        value,
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(expected, signature):
+        return JsonResponse({'error': 'Invalid signature'}, status=403)
+
+    # Extract email data
+    sender = request.POST.get('sender', '')
+    subject = request.POST.get('subject', 'No Subject')
+    body = request.POST.get('body-plain', '') or request.POST.get('body-html', '')
+
+    if not sender or not body:
+        return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+    # Save and process
+    inbound = InboundEmail.objects.create(
+        sender=sender,
+        subject=subject[:255],
+        body=body,
+    )
+
+    process_inbound_email.delay(inbound.pk)
+
+    return JsonResponse({'status': 'received', 'ticket': 'being processed'})

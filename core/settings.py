@@ -1,6 +1,7 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import dj_database_url
 
 load_dotenv()
 
@@ -10,8 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+# Always allow Railway domains in production
+if not DEBUG:
+    ALLOWED_HOSTS += ['.railway.app', '.up.railway.app']
 
 INSTALLED_APPS = [
+    'daphne',                      # Must be first
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -19,21 +24,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
+    'channels',                    # Add this
     'accounts',
     'tickets',
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',   # CSRF protection — never remove
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
 ROOT_URLCONF = 'core.urls'
+
+# NOTE: MIDDLEWARE is defined once, below the DATABASES block, and includes
+# WhiteNoise. Do not add a second MIDDLEWARE assignment — the last one wins
+# and silently overrides the others.
 
 TEMPLATES = [
     {
@@ -55,12 +55,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
+# Database — switches automatically between SQLite (dev) and PostgreSQL (production)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
 # Password validation — enforce strong passwords
 AUTH_PASSWORD_VALIDATORS = [
@@ -77,7 +89,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -87,23 +99,8 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/tickets/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-# -------------------------------------------------------
-# SECURITY HEADERS
-# These are safe for development and critical for production
-# -------------------------------------------------------
-SECURE_BROWSER_XSS_FILTER = True          # Enables browser XSS filter
-X_FRAME_OPTIONS = 'DENY'                  # Blocks clickjacking
-SECURE_CONTENT_TYPE_NOSNIFF = True        # Prevents MIME sniffing attacks
-SESSION_COOKIE_HTTPONLY = True            # JS cannot read session cookie
-CSRF_COOKIE_HTTPONLY = True               # JS cannot read CSRF cookie
-
-# These flip to True in production (when DEBUG=False)
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_HSTS_PRELOAD = not DEBUG
+# Trust the X-Forwarded-Host header set by the Railway proxy.
+USE_X_FORWARDED_HOST = True
 
 # -------------------------------------------------------
 # BLEACH — safe HTML tags for user-submitted content
@@ -114,10 +111,87 @@ BLEACH_ALLOWED_ATTRIBUTES = {}  # No attributes allowed — prevents event handl
 AUTH_USER_MODEL = 'accounts.User'
 
 #celerysettings
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+# -------------------------------------------------------
+# DJANGO CHANNELS — WebSocket support
+# -------------------------------------------------------
+ASGI_APPLICATION = 'core.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/0')],
+        },
+    },
+}
+# Local dev origins, plus any production origins supplied via env
+# (comma-separated, e.g. "https://app.example.com,https://myapp.up.railway.app").
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+CSRF_TRUSTED_ORIGINS += [
+    origin.strip()
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS += ['https://*.railway.app', 'https://*.up.railway.app']
+# Static files — whitenoise serves them in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Email configuration
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('MAILGUN_SMTP_SERVER', 'smtp.mailgun.org')
+EMAIL_PORT = int(os.getenv('MAILGUN_SMTP_PORT', 587))
+EMAIL_HOST_USER = os.getenv('MAILGUN_SMTP_LOGIN', '')
+EMAIL_HOST_PASSWORD = os.getenv('MAILGUN_SMTP_KEY', '')
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'support@mg.simedelonney.com')
+
+# Mailgun
+MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY', '')
+
+# ─── Security Headers ────────────────────────────────────────────────────────
+
+# Force HTTPS in production
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# HSTS — tell browsers to always use HTTPS for 1 year.
+# Disabled in DEBUG so a dev browser is never pinned to HTTPS on localhost.
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+# Prevent clickjacking — stops your app being embedded in iframes
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent browser from guessing content type
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Secure session cookies — only sent over HTTPS
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Session timeout — auto logout after 2 hours of inactivity
+SESSION_COOKIE_AGE = 7200
+
+# Secure CSRF cookie
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Content Security Policy headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

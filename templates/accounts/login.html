@@ -1,15 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}Log In{% endblock %}
 
 {% block content %}
-<h1>Log in</h1>
+<div class="sq-auth-wrap">
+    <div class="w-100" style="max-width: 430px">
 
-<form method="POST" novalidate>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log in</button>
-</form>
+        <!-- Brand -->
+        <div class="text-center mb-4">
+            <div class="sq-auth-logo d-inline-flex align-items-center justify-content-center mb-3">
+                <i class="bi bi-soundwave fs-2"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Welcome back</h3>
+            <p class="text-muted">Sign in to your Support<span style="color:var(--brand-dark);font-weight:600">IQ</span>
+                account</p>
+        </div>
 
-<p>Don't have an account? <a href="{% url 'accounts:register' %}">Register</a></p>
+        <!-- Login Card -->
+        <div class="card">
+            <div class="card-body p-4 p-sm-5">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                            {{ field.label }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                {% if field.html_name == 'username' %}
+                                <i class="bi bi-person text-muted"></i>
+                                {% else %}
+                                <i class="bi bi-lock text-muted"></i>
+                                {% endif %}
+                            </span>
+                            <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}"
+                                id="{{ field.id_for_label }}"
+                                class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                placeholder="{{ field.label }}" value="{{ field.value|default:'' }}">
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in field.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Register Link -->
+        <div class="text-center mt-4">
+            <p class="text-muted mb-0">
+                Don't have an account?
+                <a href="{% url 'accounts:register' %}" class="fw-semibold text-decoration-none">
+                    Create one
+                </a>
+            </p>
+        </div>
+
+    </div>
+</div>
 {% endblock %}
