@@ -12,7 +12,7 @@
     <div class="d-flex align-items-center justify-content-between">
         <div>
             <h1 style="font-size:1.8rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:0.25rem">
-                Good {% now "H" as hour %}{% if hour < "12" %}morning{% elif hour < "18" %}afternoon{% else %}evening{% endif %}, {{ user.first_name|default:user.username }}
+                Good day, {{ user.first_name|default:user.username }}
             </h1>
             <p class="text-muted mb-0" style="font-size:0.875rem">Here's where your team is focused today.</p>
         </div>
@@ -65,14 +65,12 @@
                 <h6 style="font-weight:600;margin-bottom:0.1rem">Today's queue</h6>
                 <p class="text-muted mb-0" style="font-size:0.78rem">Prioritized by response time and customer impact.</p>
             </div>
-            <!-- Search -->
             <div style="display:flex;align-items:center;gap:0.5rem;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.75rem;min-width:200px">
                 <i class="bi bi-search" style="font-size:0.8rem;color:var(--text-muted)"></i>
                 <input type="text" id="ticket-search" placeholder="Search tickets..." style="border:none;background:transparent;color:var(--text);font-size:0.82rem;outline:none;width:100%">
             </div>
         </div>
 
-        <!-- Filter tabs -->
         <div style="display:flex;gap:0.25rem" id="status-filters">
             <button type="button" class="sq-filter-btn active" data-status="">All</button>
             <button type="button" class="sq-filter-btn" data-status="open">Open</button>
