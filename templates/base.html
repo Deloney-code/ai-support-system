@@ -48,7 +48,6 @@
 
         body.light-mode .sq-sidebar { background: #ffffff; }
         body.light-mode .sq-topbar { background: #ffffff; }
-        body.light-mode .sq-new-ticket-btn { background: var(--brand); }
         body.light-mode .table { --bs-table-color: #111111; }
         body.light-mode .dropdown-menu { background: #ffffff; }
         body.light-mode .dropdown-item { color: #444444; }
@@ -539,10 +538,10 @@
         </div>
 
         <div class="sq-sidebar-bottom">
-            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-1">
+            <a href="{% url 'accounts:settings' %}" class="sq-nav-item mb-1 {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
                 <i class="bi bi-gear"></i> Settings
             </a>
-            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-2">
+            <a href="{% url 'accounts:profile' %}" class="sq-nav-item mb-2 {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
                 <i class="bi bi-question-circle"></i> Help center
             </a>
             <div class="dropdown">
@@ -611,6 +610,11 @@
                                 <i class="bi bi-person me-2"></i>Profile
                             </a>
                         </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'accounts:settings' %}">
+                                <i class="bi bi-gear me-2"></i>Settings
+                            </a>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{% url 'accounts:logout' %}">
@@ -676,7 +680,6 @@
         localStorage.setItem('sq-theme', isLight ? 'light' : 'dark');
     }
 
-    // Apply saved theme on load
     (function() {
         const saved = localStorage.getItem('sq-theme');
         if (saved === 'light') {
