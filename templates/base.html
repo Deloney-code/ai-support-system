@@ -24,17 +24,14 @@
             --text: #ffffff;
             --text-muted: #888888;
             --text-subtle: #555555;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
             --radius: 8px;
             --sidebar-width: 220px;
         }
 
-        * {
-            -webkit-font-smoothing: antialiased;
-            box-sizing: border-box;
-        }
+        * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
 
         body {
             background-color: var(--bg);
@@ -45,40 +42,20 @@
             min-height: 100vh;
         }
 
-        a {
-            color: var(--text);
-            text-decoration: none;
-        }
+        a { color: var(--text); text-decoration: none; }
+        a:hover { color: var(--text); }
 
-        a:hover {
-            color: var(--text);
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
+        h1, h2, h3, h4, h5, h6 {
             font-weight: 700;
             color: var(--text);
             letter-spacing: -0.02em;
         }
 
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        hr {
-            border-color: var(--border);
-            opacity: 1;
-        }
+        .text-muted { color: var(--text-muted) !important; }
+        hr { border-color: var(--border); opacity: 1; }
 
         /* ---------- App Layout ---------- */
-        .sq-app {
-            display: flex;
-            min-height: 100vh;
-        }
+        .sq-app { display: flex; min-height: 100vh; }
 
         /* ---------- Sidebar ---------- */
         .sq-sidebar {
@@ -89,9 +66,7 @@
             display: flex;
             flex-direction: column;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             z-index: 100;
             padding: 0;
         }
@@ -143,14 +118,9 @@
             transition: background 0.15s ease;
         }
 
-        .sq-new-ticket-btn:hover {
-            background: #e04a00;
-            color: #fff;
-        }
+        .sq-new-ticket-btn:hover { background: #e04a00; color: #fff; }
 
-        .sq-sidebar-section {
-            padding: 1rem 0.75rem 0.5rem;
-        }
+        .sq-sidebar-section { padding: 1rem 0.75rem 0.5rem; }
 
         .sq-sidebar-label {
             font-size: 0.7rem;
@@ -177,15 +147,8 @@
             margin-bottom: 2px;
         }
 
-        .sq-nav-item:hover {
-            background: var(--surface-2);
-            color: var(--text);
-        }
-
-        .sq-nav-item.active {
-            background: var(--surface-2);
-            color: var(--text);
-        }
+        .sq-nav-item:hover { background: var(--surface-2); color: var(--text); }
+        .sq-nav-item.active { background: var(--surface-2); color: var(--text); }
 
         .sq-nav-item.active::before {
             content: '';
@@ -210,11 +173,7 @@
             text-align: center;
         }
 
-        .sq-nav-item i {
-            font-size: 0.95rem;
-            width: 16px;
-            text-align: center;
-        }
+        .sq-nav-item i { font-size: 0.95rem; width: 16px; text-align: center; }
 
         .sq-sidebar-bottom {
             margin-top: auto;
@@ -234,10 +193,7 @@
             color: var(--text);
         }
 
-        .sq-user-row:hover {
-            background: var(--surface-2);
-            color: var(--text);
-        }
+        .sq-user-row:hover { background: var(--surface-2); color: var(--text); }
 
         .sq-avatar {
             display: inline-flex;
@@ -252,25 +208,11 @@
             flex-shrink: 0;
         }
 
-        .sq-user-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .sq-user-info { flex: 1; min-width: 0; }
+        .sq-user-name { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sq-user-role { font-size: 0.72rem; color: var(--text-muted); }
 
-        .sq-user-name {
-            font-size: 0.82rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sq-user-role {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        /* ---------- Main Content ---------- */
+        /* ---------- Main ---------- */
         .sq-main {
             margin-left: var(--sidebar-width);
             flex: 1;
@@ -338,16 +280,10 @@
             transition: background 0.15s ease, color 0.15s ease;
         }
 
-        .sq-topbar-icon-btn:hover {
-            background: var(--surface-3);
-            color: var(--text);
-        }
+        .sq-topbar-icon-btn:hover { background: var(--surface-3); color: var(--text); }
 
         /* ---------- Page Content ---------- */
-        .sq-content {
-            padding: 1.5rem;
-            flex: 1;
-        }
+        .sq-content { padding: 1.5rem; flex: 1; }
 
         /* ---------- Cards ---------- */
         .card {
@@ -367,86 +303,27 @@
         }
 
         /* ---------- Buttons ---------- */
-        .btn {
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: all 0.15s ease;
-        }
+        .btn { border-radius: 6px; font-weight: 500; font-size: 0.875rem; transition: all 0.15s ease; }
 
-        .btn-primary {
-            background: var(--brand);
-            border-color: var(--brand);
-            color: #fff;
-        }
+        .btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+        .btn-primary:hover { background: #e04a00; border-color: #e04a00; color: #fff; }
 
-        .btn-primary:hover {
-            background: #e04a00;
-            border-color: #e04a00;
-            color: #fff;
-        }
+        .btn-outline-primary { color: var(--brand); border-color: var(--border); background: transparent; }
+        .btn-outline-primary:hover { background: var(--brand); border-color: var(--brand); color: #fff; }
 
-        .btn-outline-primary {
-            color: var(--brand);
-            border-color: var(--border);
-            background: transparent;
-        }
+        .btn-outline-secondary { color: var(--text-muted); border-color: var(--border); background: transparent; }
+        .btn-outline-secondary:hover { background: var(--surface-2); color: var(--text); border-color: var(--border); }
 
-        .btn-outline-primary:hover {
-            background: var(--brand);
-            border-color: var(--brand);
-            color: #fff;
-        }
+        .btn-outline-danger { color: #ff6b6b; border-color: var(--border); background: transparent; }
+        .btn-outline-danger:hover { background: rgba(255,107,107,0.1); color: #ff6b6b; border-color: #ff6b6b; }
 
-        .btn-outline-secondary {
-            color: var(--text-muted);
-            border-color: var(--border);
-            background: transparent;
-        }
+        .btn-outline-success { color: #4ade80; border-color: var(--border); background: transparent; }
+        .btn-outline-success:hover { background: rgba(74,222,128,0.1); color: #4ade80; }
 
-        .btn-outline-secondary:hover {
-            background: var(--surface-2);
-            color: var(--text);
-            border-color: var(--border);
-        }
+        .btn-outline-warning { color: #fbbf24; border-color: var(--border); background: transparent; }
+        .btn-outline-warning:hover { background: rgba(251,191,36,0.1); color: #fbbf24; }
 
-        .btn-outline-danger {
-            color: #ff6b6b;
-            border-color: var(--border);
-            background: transparent;
-        }
-
-        .btn-outline-danger:hover {
-            background: rgba(255, 107, 107, 0.1);
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        .btn-outline-success {
-            color: #4ade80;
-            border-color: var(--border);
-            background: transparent;
-        }
-
-        .btn-outline-success:hover {
-            background: rgba(74, 222, 128, 0.1);
-            color: #4ade80;
-        }
-
-        .btn-outline-warning {
-            color: #fbbf24;
-            border-color: var(--border);
-            background: transparent;
-        }
-
-        .btn-outline-warning:hover {
-            background: rgba(251, 191, 36, 0.1);
-            color: #fbbf24;
-        }
-
-        .text-primary {
-            color: var(--brand) !important;
-        }
+        .text-primary { color: var(--brand) !important; }
 
         /* ---------- Pills ---------- */
         .pill {
@@ -461,69 +338,28 @@
             white-space: nowrap;
         }
 
-        .pill .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: currentColor;
-        }
+        .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-        .pill-open {
-            background: rgba(255, 85, 0, 0.12);
-            color: #ff8a4d;
-        }
-
-        .pill-progress {
-            background: rgba(251, 191, 36, 0.12);
-            color: #fbbf24;
-        }
-
-        .pill-resolved {
-            background: rgba(74, 222, 128, 0.12);
-            color: #4ade80;
-        }
-
-        .pill-closed {
-            background: rgba(136, 136, 136, 0.12);
-            color: #888888;
-        }
-
-        .pill-low {
-            background: rgba(136, 136, 136, 0.12);
-            color: #888888;
-        }
-
-        .pill-medium {
-            background: rgba(251, 191, 36, 0.12);
-            color: #fbbf24;
-        }
-
-        .pill-high {
-            background: rgba(255, 85, 0, 0.12);
-            color: #ff8a4d;
-        }
-
-        .pill-critical {
-            background: rgba(255, 107, 107, 0.12);
-            color: #ff6b6b;
-        }
-
-        .pill-category {
-            background: var(--surface-2);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
+        .pill-open     { background: rgba(255,85,0,0.12); color: #ff8a4d; }
+        .pill-progress { background: rgba(251,191,36,0.12); color: #fbbf24; }
+        .pill-resolved { background: rgba(74,222,128,0.12); color: #4ade80; }
+        .pill-closed   { background: rgba(136,136,136,0.12); color: #888888; }
+        .pill-low      { background: rgba(136,136,136,0.12); color: #888888; }
+        .pill-medium   { background: rgba(251,191,36,0.12); color: #fbbf24; }
+        .pill-high     { background: rgba(255,85,0,0.12); color: #ff8a4d; }
+        .pill-critical { background: rgba(255,107,107,0.12); color: #ff6b6b; }
+        .pill-category { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
 
         /* ---------- Tables ---------- */
         .table {
             --bs-table-color: var(--text);
             --bs-table-bg: transparent;
             --bs-table-border-color: var(--border);
-            --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+            --bs-table-hover-bg: rgba(255,255,255,0.03);
             color: var(--text);
         }
 
-        .table> :not(caption)>*>* {
+        .table > :not(caption) > * > * {
             padding: 0.75rem 1rem;
             background-color: transparent;
             border-bottom-color: var(--border);
@@ -539,30 +375,14 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .table tbody tr {
-            transition: background 0.1s ease;
-            cursor: pointer;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .table tbody td a {
-            color: var(--text);
-        }
-
-        .table tbody td a:hover {
-            color: var(--brand);
-        }
-
-        tr[data-href] {
-            cursor: pointer;
-        }
+        .table tbody tr { transition: background 0.1s ease; cursor: pointer; }
+        .table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .table tbody td a { color: var(--text); }
+        .table tbody td a:hover { color: var(--brand); }
+        tr[data-href] { cursor: pointer; }
 
         /* ---------- Forms ---------- */
-        .form-control,
-        .form-select {
+        .form-control, .form-select {
             border-radius: 6px;
             background-color: var(--surface-2);
             border: 1px solid var(--border);
@@ -572,120 +392,42 @@
             transition: border-color 0.15s ease;
         }
 
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             background-color: var(--surface-2);
             border-color: var(--brand);
             box-shadow: 0 0 0 3px var(--brand-soft);
             color: var(--text);
         }
 
-        .form-control::placeholder {
-            color: var(--text-subtle);
-        }
-
-        .form-label {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 0.4rem;
-        }
+        .form-control::placeholder { color: var(--text-subtle); }
+        .form-label { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.4rem; }
 
         .form-select {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23888888' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         }
 
-        select option {
-            background: var(--surface-2);
-            color: var(--text);
-        }
-
-        .input-group-text {
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--surface-2);
-            color: var(--text-muted);
-        }
-
-        .is-invalid {
-            border-color: #ff6b6b !important;
-        }
-
-        .invalid-feedback {
-            color: #ff6b6b;
-            font-size: 0.8rem;
-        }
+        select option { background: var(--surface-2); color: var(--text); }
+        .input-group-text { border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-muted); }
+        .is-invalid { border-color: #ff6b6b !important; }
+        .invalid-feedback { color: #ff6b6b; font-size: 0.8rem; }
 
         /* ---------- Alerts ---------- */
-        .alert {
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-
-        .alert-success {
-            background: rgba(74, 222, 128, 0.1);
-            border-color: rgba(74, 222, 128, 0.2);
-            color: #4ade80;
-        }
-
-        .alert-danger {
-            background: rgba(255, 107, 107, 0.1);
-            border-color: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-        }
-
-        .alert-warning {
-            background: rgba(251, 191, 36, 0.1);
-            border-color: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-        }
-
-        .alert-info {
-            background: rgba(96, 165, 250, 0.1);
-            border-color: rgba(96, 165, 250, 0.2);
-            color: #60a5fa;
-        }
-
-        .alert-secondary {
-            background: var(--surface-2);
-            border-color: var(--border);
-            color: var(--text-muted);
-        }
-
-        .btn-close {
-            filter: invert(1) grayscale(1) brightness(1.5);
-        }
+        .alert { border-radius: 6px; font-size: 0.875rem; }
+        .alert-success { background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.2); color: #4ade80; }
+        .alert-danger { background: rgba(255,107,107,0.1); border-color: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .alert-warning { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.2); color: #fbbf24; }
+        .alert-info { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.2); color: #60a5fa; }
+        .alert-secondary { background: var(--surface-2); border-color: var(--border); color: var(--text-muted); }
+        .btn-close { filter: invert(1) grayscale(1) brightness(1.5); }
 
         /* ---------- Pagination ---------- */
-        .page-link {
-            background: var(--surface-2);
-            border-color: var(--border);
-            color: var(--text);
-            border-radius: 6px;
-        }
+        .page-link { background: var(--surface-2); border-color: var(--border); color: var(--text); border-radius: 6px; }
+        .page-link:hover { background: var(--surface-3); color: var(--text); }
+        .page-item.active .page-link { background: var(--brand); border-color: var(--brand); }
+        .page-item.disabled .page-link { background: var(--surface-2); color: var(--text-subtle); }
 
-        .page-link:hover {
-            background: var(--surface-3);
-            color: var(--text);
-        }
-
-        .page-item.active .page-link {
-            background: var(--brand);
-            border-color: var(--brand);
-        }
-
-        .page-item.disabled .page-link {
-            background: var(--surface-2);
-            color: var(--text-subtle);
-        }
-
-        .sq-richtext p:last-child {
-            margin-bottom: 0;
-        }
-
-        .sq-richtext,
-        .sq-richtext p {
-            color: var(--text);
-        }
+        .sq-richtext p:last-child { margin-bottom: 0; }
+        .sq-richtext, .sq-richtext p { color: var(--text); }
 
         /* ---------- Dropdown ---------- */
         .dropdown-menu {
@@ -697,27 +439,11 @@
             z-index: 99999;
         }
 
-        .dropdown-item {
-            color: var(--text-muted);
-            border-radius: 5px;
-            font-size: 0.875rem;
-            padding: 0.45rem 0.75rem;
-        }
+        .dropdown-item { color: var(--text-muted); border-radius: 5px; font-size: 0.875rem; padding: 0.45rem 0.75rem; }
+        .dropdown-item:hover { background: var(--surface-3); color: var(--text); }
+        .dropdown-divider { border-color: var(--border); }
 
-        .dropdown-item:hover {
-            background: var(--surface-3);
-            color: var(--text);
-        }
-
-        .dropdown-divider {
-            border-color: var(--border);
-        }
-
-        .dropdown-menu form {
-            margin: 0;
-            padding: 0;
-        }
-
+        .dropdown-menu form { margin: 0; padding: 0; }
         .dropdown-menu form button {
             width: 100%;
             text-align: left;
@@ -729,10 +455,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        .dropdown-menu form button:hover {
-            background: rgba(255, 107, 107, 0.1);
-        }
+        .dropdown-menu form button:hover { background: rgba(255,107,107,0.1); }
 
         /* ---------- Auth ---------- */
         .sq-auth-wrap {
@@ -745,88 +468,119 @@
 
         /* ---------- Mobile ---------- */
         @media (max-width: 767.98px) {
-            .sq-sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.2s ease;
-            }
-
-            .sq-sidebar.open {
-                transform: translateX(0);
-            }
-
-            .sq-main {
-                margin-left: 0;
-            }
-
-            .sq-content {
-                padding: 1rem;
-            }
+            .sq-sidebar { transform: translateX(-100%); transition: transform 0.2s ease; }
+            .sq-sidebar.open { transform: translateX(0); }
+            .sq-main { margin-left: 0; }
+            .sq-content { padding: 1rem; }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-    <div class="sq-app">
+<div class="sq-app">
 
-        {% if user.is_authenticated %}
-        <!-- Sidebar -->
-        <aside class="sq-sidebar">
-            <div class="sq-sidebar-top">
-                <a class="sq-brand" href="{% url 'tickets:dashboard' %}">
-                    <span class="sq-logo">S</span>
-                    SupportIQ
-                </a>
-                <a href="{% url 'tickets:ticket_create' %}" class="sq-new-ticket-btn">
-                    <i class="bi bi-plus"></i> New ticket
-                </a>
+    {% if user.is_authenticated %}
+    <!-- Sidebar -->
+    <aside class="sq-sidebar">
+        <div class="sq-sidebar-top">
+            <a class="sq-brand" href="{% url 'tickets:dashboard' %}">
+                <span class="sq-logo">S</span>
+                SupportIQ
+            </a>
+            <a href="{% url 'tickets:ticket_create' %}" class="sq-new-ticket-btn">
+                <i class="bi bi-plus"></i> New ticket
+            </a>
+        </div>
+
+        <div class="sq-sidebar-section">
+            <div class="sq-sidebar-label">Workspace</div>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2"></i> Overview
+            </a>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
+                <i class="bi bi-ticket"></i> Tickets
+                <span class="sq-nav-badge">{{ user.tickets.count }}</span>
+            </a>
+            {% if user.is_staff %}
+            <a href="/admin/" class="sq-nav-item">
+                <i class="bi bi-shield-check"></i> Admin
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="sq-sidebar-section">
+            <div class="sq-sidebar-label">Views</div>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
+                <i class="bi bi-person"></i> Assigned to me
+            </a>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
+                <i class="bi bi-collection"></i> All open
+            </a>
+        </div>
+
+        <div class="sq-sidebar-bottom">
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-1">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-2">
+                <i class="bi bi-question-circle"></i> Help center
+            </a>
+            <div class="dropdown">
+                <div class="sq-user-row dropdown-toggle" data-bs-toggle="dropdown">
+                    <span class="sq-avatar" style="width:28px;height:28px;font-size:0.75rem">
+                        {{ user.username|first|upper }}
+                    </span>
+                    <div class="sq-user-info">
+                        <div class="sq-user-name">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="sq-user-role">{% if user.is_superuser %}Admin{% elif user.role == 'agent' %}Agent{% else %}Customer{% endif %}</div>
+                    </div>
+                    <i class="bi bi-chevron-right" style="font-size:0.7rem;color:var(--text-subtle)"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                            <i class="bi bi-person me-2"></i>Profile
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{% url 'accounts:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </aside>
 
-            <div class="sq-sidebar-section">
-                <div class="sq-sidebar-label">Workspace</div>
-                <a href="{% url 'tickets:dashboard' %}"
-                    class="sq-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <i class="bi bi-grid-1x2"></i> Overview
-                </a>
-                <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
-                    <i class="bi bi-ticket"></i> Tickets
-                    <span class="sq-nav-badge">{{ user.tickets.count }}</span>
-                </a>
-                {% if user.is_staff %}
-                <a href="/admin/" class="sq-nav-item">
-                    <i class="bi bi-shield-check"></i> Admin
-                </a>
-                {% endif %}
+    <!-- Main -->
+    <div class="sq-main">
+
+        <!-- Top Bar -->
+        <div class="sq-topbar">
+            <div class="sq-topbar-left">
+                <span>{% block breadcrumb %}Dashboard{% endblock %}</span>
             </div>
-
-            <div class="sq-sidebar-section">
-                <div class="sq-sidebar-label">Views</div>
-                <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
-                    <i class="bi bi-person"></i> Assigned to me
+            <div class="sq-topbar-right">
+                <div class="sq-search">
+                    <i class="bi bi-search" style="font-size:0.8rem"></i>
+                    <span>Search...</span>
+                </div>
+                <a href="{% url 'tickets:ticket_create' %}" class="sq-topbar-icon-btn" title="New Ticket">
+                    <i class="bi bi-plus"></i>
                 </a>
-                <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
-                    <i class="bi bi-collection"></i> All open
-                </a>
-            </div>
-
-            <div class="sq-sidebar-bottom">
-                <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-1">
-                    <i class="bi bi-gear"></i> Settings
-                </a>
-                <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item mb-2">
-                    <i class="bi bi-question-circle"></i> Help center
-                </a>
+                <div class="sq-topbar-icon-btn">
+                    <i class="bi bi-bell"></i>
+                </div>
                 <div class="dropdown">
-                    <div class="sq-user-row dropdown-toggle" data-bs-toggle="dropdown">
-                        <span class="sq-avatar" style="width:28px;height:28px;font-size:0.75rem">
+                    <div class="sq-topbar-icon-btn dropdown-toggle" data-bs-toggle="dropdown" style="width:auto;padding:0 0.4rem;gap:0.4rem;font-size:0.82rem">
+                        <span class="sq-avatar" style="width:24px;height:24px;font-size:0.7rem">
                             {{ user.username|first|upper }}
                         </span>
-                        <div class="sq-user-info">
-                            <div class="sq-user-name">{{ user.get_full_name|default:user.username }}</div>
-                            <div class="sq-user-role">{% if user.is_superuser %}Admin{% elif user.role == 'agent'
-                                %}Agent{% else %}Customer{% endif %}</div>
-                        </div>
-                        <i class="bi bi-chevron-right" style="font-size:0.7rem;color:var(--text-subtle)"></i>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
@@ -834,9 +588,7 @@
                                 <i class="bi bi-person me-2"></i>Profile
                             </a>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{% url 'accounts:logout' %}">
                                 {% csrf_token %}
@@ -848,98 +600,48 @@
                     </ul>
                 </div>
             </div>
-        </aside>
-
-        <!-- Main -->
-        <div class="sq-main">
-
-            <!-- Top Bar -->
-            <div class="sq-topbar">
-                <div class="sq-topbar-left">
-                    <span>{% block breadcrumb %}Dashboard{% endblock %}</span>
-                </div>
-                <div class="sq-topbar-right">
-                    <div class="sq-search">
-                        <i class="bi bi-search" style="font-size:0.8rem"></i>
-                        <span>Search...</span>
-                    </div>
-                    <a href="{% url 'tickets:ticket_create' %}" class="sq-topbar-icon-btn" title="New Ticket">
-                        <i class="bi bi-plus"></i>
-                    </a>
-                    <div class="sq-topbar-icon-btn">
-                        <i class="bi bi-bell"></i>
-                    </div>
-                    <div class="dropdown">
-                        <div class="sq-topbar-icon-btn dropdown-toggle" data-bs-toggle="dropdown"
-                            style="width:auto;padding:0 0.4rem;gap:0.4rem;font-size:0.82rem">
-                            <span class="sq-avatar" style="width:24px;height:24px;font-size:0.7rem">
-                                {{ user.username|first|upper }}
-                            </span>
-                        </div>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'accounts:profile' %}">
-                                    <i class="bi bi-person me-2"></i>Profile
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="{% url 'accounts:logout' %}">
-                                    {% csrf_token %}
-                                    <button type="submit">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flash Messages -->
-            {% if messages %}
-            <div style="padding: 0.75rem 1.5rem 0">
-                {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %} alert-dismissible fade show d-flex align-items-center"
-                    role="alert">
-                    <i
-                        class="bi bi-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
-                    <span>{{ message }}</span>
-                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Page Content -->
-            <div class="sq-content">
-            </div>
-
         </div>
 
-        {% else %}
-        <!-- Not authenticated — full page -->
-        <div style="flex:1">
-            {% if messages %}
-            <div style="padding:1rem">
-                {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show"
-                    role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endfor %}
+        <!-- Flash Messages -->
+        {% if messages %}
+        <div style="padding: 0.75rem 1.5rem 0">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %} alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="bi bi-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+                <span>{{ message }}</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
             </div>
-            {% endif %}
+            {% endfor %}
         </div>
         {% endif %}
 
+        <!-- Page Content -->
+        <div class="sq-content">
+            {% block content %}{% endblock %}
+        </div>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
-</body>
+    {% else %}
+    <!-- Not authenticated — full page -->
+    <div style="flex:1">
+        {% if messages %}
+        <div style="padding:1rem">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+    {% endif %}
 
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
 </html>
