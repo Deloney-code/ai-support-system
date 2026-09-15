@@ -2,75 +2,82 @@
 
 {% block title %}{{ action }} Ticket{% endblock %}
 
+{% block breadcrumb %}Tickets / {{ action }}{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-8">
+
+<div style="max-width:680px;margin:0 auto">
 
     <!-- Page Header -->
-    <div class="d-flex align-items-center mb-4">
-      <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary me-3" title="Back">
-        <i class="bi bi-arrow-left"></i>
-      </a>
-      <div>
-        <h2 class="mb-1">{{ action }} Ticket</h2>
-        <p class="text-muted mb-0">Tell us what you need help with and we'll route it to the right place</p>
-      </div>
+    <div style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+            <a href="{% url 'tickets:dashboard' %}" style="color:var(--text-muted);font-size:0.8rem;text-decoration:none;display:flex;align-items:center;gap:0.3rem">
+                <i class="bi bi-arrow-left"></i> Tickets
+            </a>
+            <span style="color:var(--text-muted);font-size:0.8rem">/</span>
+            <span style="font-size:0.8rem;color:var(--text-muted)">{{ action }}</span>
+        </div>
+        <h2 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem">{{ action }} Ticket</h2>
+        <p style="font-size:0.875rem;color:var(--text-muted);margin:0">Tell us what you need help with and we'll route it to the right place.</p>
     </div>
 
     <!-- Form Card -->
-    <div class="card">
-      <div class="card-body p-4 p-lg-5">
-        <form method="POST" novalidate>
-          {% csrf_token %}
+    <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden">
 
-          {% for field in form %}
-          <div class="mb-3">
-            <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
-              {{ field.label }}
-              {% if field.field.required %}
-              <span class="text-danger">*</span>
-              {% endif %}
-            </label>
-            {{ field }}
-            {% if field.errors %}
-            <div class="text-danger small mt-1">
-              {% for error in field.errors %}{{ error }}{% endfor %}
-            </div>
-            {% endif %}
-            {% if field.help_text %}
-            <div class="form-text text-muted">{{ field.help_text }}</div>
-            {% endif %}
-          </div>
-          {% endfor %}
+        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
+            <i class="bi bi-ticket me-2" style="color:var(--brand)"></i>Ticket details
+        </div>
 
-          <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check-circle me-2"></i>{{ action }} Ticket
-            </button>
-            <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary px-4">
-              <i class="bi bi-x-circle me-2"></i>Cancel
-            </a>
-          </div>
+        <div style="padding:1.5rem">
+            <form method="POST" novalidate>
+                {% csrf_token %}
 
-        </form>
-      </div>
+                {% for field in form %}
+                <div style="margin-bottom:1.25rem">
+                    <label for="{{ field.id_for_label }}" style="display:block;font-size:0.8rem;font-weight:500;color:var(--text-muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.06em">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                        <span style="color:var(--brand)">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div style="color:#ff6b6b;font-size:0.78rem;margin-top:0.3rem">
+                        {% for error in field.errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <div style="font-size:0.75rem;color:var(--text-subtle);margin-top:0.3rem">{{ field.help_text }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <hr style="border-color:var(--border);margin:1.5rem 0">
+
+                <div style="display:flex;gap:0.75rem">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>{{ action }} Ticket
+                    </button>
+                    <a href="{% url 'tickets:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x me-1"></i>Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
     </div>
 
-  </div>
 </div>
 
 <script>
-  // Apply Bootstrap form styling to fields rendered by Django widgets
-  document.querySelectorAll('form input, form textarea, form select').forEach(function (el)
-  {
-    if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') return;
-    if (el.tagName === 'SELECT')
-    {
-      el.classList.add('form-select');
-    } else
-    {
-      el.classList.add('form-control');
-    }
-  });
+    document.querySelectorAll('form input, form textarea, form select').forEach(function(el) {
+        if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') return;
+        if (el.tagName === 'SELECT') {
+            el.classList.add('form-select');
+        } else {
+            el.classList.add('form-control');
+        }
+    });
 </script>
+
 {% endblock %}
