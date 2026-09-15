@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Team{% endblock %}
+
+{% block breadcrumb %}Team{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h1 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem">Team</h1>
+    <p class="text-muted" style="font-size:0.875rem">Manage agents and their ticket assignments.</p>
+</div>
+
+<!-- Agents -->
+<div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1.25rem">
+    <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600">
+        <i class="bi bi-people me-2" style="color:var(--brand)"></i>Support Agents
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+        <thead>
+            <tr style="border-bottom:1px solid var(--border)">
+                <th style="padding:0.6rem 1.25rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Agent</th>
+                <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Open</th>
+                <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">In Progress</th>
+                <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Resolved</th>
+                <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Total</th>
+                <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Workload</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agents %}
+            <tr style="border-bottom:1px solid var(--border)"
+                onmouseover="this.style.background='rgba(255,255,255,0.03)'"
+                onmouseout="this.style.background='transparent'">
+                <td style="padding:0.875rem 1.25rem">
+                    <div style="display:flex;align-items:center;gap:0.6rem">
+                        <span class="sq-avatar" style="width:32px;height:32px;font-size:0.8rem">
+                            {{ agent.username|first|upper }}
+                        </span>
+                        <div>
+                            <div style="font-size:0.875rem;font-weight:500">{{ agent.get_full_name|default:agent.username }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted)">{{ agent.email }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:0.875rem 1rem">
+                    <span class="pill pill-open">{{ agent.open_count }}</span>
+                </td>
+                <td style="padding:0.875rem 1rem">
+                    <span class="pill pill-progress">{{ agent.in_progress_count }}</span>
+                </td>
+                <td style="padding:0.875rem 1rem">
+                    <span class="pill pill-resolved">{{ agent.resolved_count }}</span>
+                </td>
+                <td style="padding:0.875rem 1rem;font-size:0.875rem;font-weight:600">
+                    {{ agent.total_count }}
+                </td>
+                <td style="padding:0.875rem 1rem;min-width:120px">
+                    <div style="height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden">
+                        <div style="height:100%;background:var(--brand);border-radius:3px;width:{% if agent.total_count > 0 %}{% widthratio agent.open_count 20 100 %}{% else %}0{% endif %}%"></div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.875rem">
+                    No agents found. Assign the agent role to users from the admin panel.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Unassigned Tickets -->
+<div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden">
+    <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600">
+        <i class="bi bi-inbox me-2" style="color:var(--brand)"></i>Unassigned Tickets
+        {% if unassigned %}
+        <span class="pill pill-high ms-2">{{ unassigned|length }} pending</span>
+        {% endif %}
+    </div>
+    {% for ticket in unassigned %}
+    <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem">
+        <div style="flex:1;min-width:0">
+            <a href="{% url 'tickets:ticket_detail' ticket.pk %}" style="font-size:0.875rem;font-weight:500;color:var(--text);text-decoration:none">
+                {{ ticket.title|truncatechars:60 }}
+            </a>
+            <div style="font-size:0.75rem;color:var(--text-muted)">
+                #{{ ticket.pk }} · {{ ticket.owner.get_full_name|default:ticket.owner.username }} · {{ ticket.created_at|date:"M d, H:i" }}
+            </div>
+        </div>
+        <form method="POST" action="{% url 'tickets:assign_ticket' ticket.pk %}" style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0">
+            {% csrf_token %}
+            <select name="agent_id" class="form-select form-select-sm" style="font-size:0.78rem;width:auto">
+                <option value="">Select agent...</option>
+                {% for agent in agents %}
+                <option value="{{ agent.pk }}">{{ agent.get_full_name|default:agent.username }} ({{ agent.open_count }} open)</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Assign</button>
+        </form>
+    </div>
+    {% empty %}
+    <div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.875rem">
+        <i class="bi bi-check-circle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;color:#4ade80"></i>
+        All tickets are assigned
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

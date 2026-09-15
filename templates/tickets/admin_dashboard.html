@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block breadcrumb %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.5rem">
+        WORKSPACE / ADMIN
+    </div>
+    <h1 style="font-size:1.8rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:0.25rem">
+        Admin Dashboard
+    </h1>
+    <p class="text-muted" style="font-size:0.875rem">Full control over tickets, agents and customers.</p>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div style="border:1px solid var(--border);border-radius:8px;padding:1.25rem;background:var(--surface)">
+            <div class="text-muted mb-1" style="font-size:0.75rem;font-weight:500">Total Tickets</div>
+            <div style="font-size:2rem;font-weight:700;letter-spacing:-0.03em">{{ total_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div style="border:1px solid var(--border);border-radius:8px;padding:1.25rem;background:var(--surface)">
+            <div class="text-muted mb-1" style="font-size:0.75rem;font-weight:500">Open</div>
+            <div style="font-size:2rem;font-weight:700;letter-spacing:-0.03em;color:#ff8a4d">{{ open_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div style="border:1px solid var(--border);border-radius:8px;padding:1.25rem;background:var(--surface)">
+            <div class="text-muted mb-1" style="font-size:0.75rem;font-weight:500">In Progress</div>
+            <div style="font-size:2rem;font-weight:700;letter-spacing:-0.03em;color:#fbbf24">{{ in_progress_count }}</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div style="border:1px solid var(--border);border-radius:8px;padding:1.25rem;background:var(--surface);border-color:rgba(255,85,0,0.3)">
+            <div class="text-muted mb-1" style="font-size:0.75rem;font-weight:500">Unassigned</div>
+            <div style="font-size:2rem;font-weight:700;letter-spacing:-0.03em;color:#ff6b6b">{{ unassigned_count }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- Left Column -->
+    <div class="col-lg-8">
+
+        <!-- Unassigned Tickets -->
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1.25rem">
+            <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:0.82rem;font-weight:600">
+                    <i class="bi bi-inbox me-2" style="color:var(--brand)"></i>Unassigned Tickets
+                    {% if unassigned_count > 0 %}
+                    <span class="pill pill-high ms-2">{{ unassigned_count }} pending</span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'tickets:dashboard' %}" style="font-size:0.78rem;color:var(--text-muted)">View all</a>
+            </div>
+            <div>
+                {% for ticket in unassigned_tickets %}
+                <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem">
+                    <div style="width:3px;height:32px;border-radius:2px;background:{% if ticket.priority == 'critical' %}#ff6b6b{% elif ticket.priority == 'high' %}#FF5500{% elif ticket.priority == 'medium' %}#fbbf24{% else %}var(--border){% endif %};flex-shrink:0"></div>
+                    <div style="flex:1;min-width:0">
+                        <a href="{% url 'tickets:ticket_detail' ticket.pk %}" style="font-size:0.875rem;font-weight:500;color:var(--text);text-decoration:none">
+                            {{ ticket.title|truncatechars:50 }}
+                        </a>
+                        <div style="font-size:0.75rem;color:var(--text-muted)">
+                            #{{ ticket.pk }} · {{ ticket.owner.get_full_name|default:ticket.owner.username }} · {{ ticket.created_at|date:"M d, H:i" }}
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0">
+                        <span class="pill pill-category">{{ ticket.get_category_display }}</span>
+                        <form method="POST" action="{% url 'tickets:assign_ticket' ticket.pk %}" style="display:flex;gap:0.3rem;align-items:center">
+                            {% csrf_token %}
+                            <select name="agent_id" class="form-select form-select-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;width:auto">
+                                <option value="">Assign to...</option>
+                                {% for agent in agents %}
+                                <option value="{{ agent.pk }}">{{ agent.get_full_name|default:agent.username }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm" style="font-size:0.75rem;padding:0.25rem 0.5rem;white-space:nowrap">
+                                Assign
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.875rem">
+                    <i class="bi bi-check-circle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;color:#4ade80"></i>
+                    All tickets are assigned
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- At Risk Tickets -->
+        {% if at_risk %}
+        <div style="border:1px solid rgba(255,107,107,0.3);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1.25rem">
+            <div style="padding:0.875rem 1.25rem;border-bottom:1px solid rgba(255,107,107,0.2);font-size:0.82rem;font-weight:600;color:#ff6b6b">
+                <i class="bi bi-exclamation-triangle me-2"></i>At Risk — Open over 24 hours
+            </div>
+            {% for ticket in at_risk %}
+            <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem">
+                <div>
+                    <a href="{% url 'tickets:ticket_detail' ticket.pk %}" style="font-size:0.875rem;font-weight:500;color:var(--text);text-decoration:none">
+                        {{ ticket.title|truncatechars:50 }}
+                    </a>
+                    <div style="font-size:0.75rem;color:var(--text-muted)">
+                        #{{ ticket.pk }} · {{ ticket.owner.get_full_name|default:ticket.owner.username }} · {{ ticket.created_at|date:"M d, H:i" }}
+                    </div>
+                </div>
+                <span class="pill pill-critical">At Risk</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Recent Tickets -->
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden">
+            <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600">
+                <i class="bi bi-clock-history me-2" style="color:var(--brand)"></i>Recent Tickets
+            </div>
+            <table style="width:100%;border-collapse:collapse">
+                <thead>
+                    <tr style="border-bottom:1px solid var(--border)">
+                        <th style="padding:0.6rem 1.25rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">#</th>
+                        <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Subject</th>
+                        <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Customer</th>
+                        <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Agent</th>
+                        <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in recent_tickets %}
+                    <tr style="border-bottom:1px solid var(--border);cursor:pointer"
+                        onclick="window.location='{% url 'tickets:ticket_detail' ticket.pk %}'"
+                        onmouseover="this.style.background='rgba(255,255,255,0.03)'"
+                        onmouseout="this.style.background='transparent'">
+                        <td style="padding:0.75rem 1.25rem;font-size:0.78rem;color:var(--text-muted)">#{{ ticket.pk }}</td>
+                        <td style="padding:0.75rem 1rem;font-size:0.82rem;font-weight:500">{{ ticket.title|truncatechars:40 }}</td>
+                        <td style="padding:0.75rem 1rem;font-size:0.82rem;color:var(--text-muted)">{{ ticket.owner.get_full_name|default:ticket.owner.username }}</td>
+                        <td style="padding:0.75rem 1rem;font-size:0.82rem;color:var(--text-muted)">
+                            {% if ticket.assigned_to %}
+                            {{ ticket.assigned_to.get_full_name|default:ticket.assigned_to.username }}
+                            {% else %}
+                            <span style="color:#ff6b6b">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding:0.75rem 1rem">
+                            <span class="pill {% if ticket.status == 'open' %}pill-open{% elif ticket.status == 'in_progress' %}pill-progress{% elif ticket.status == 'resolved' %}pill-resolved{% else %}pill-closed{% endif %}">
+                                <span class="dot"></span>{{ ticket.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Right Column — Agent Workload -->
+    <div class="col-lg-4">
+        <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden">
+            <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600">
+                <i class="bi bi-people me-2" style="color:var(--brand)"></i>Agent Workload
+            </div>
+            <div style="padding:0.75rem">
+                {% for agent in agents %}
+                <div style="padding:0.75rem;border-radius:6px;margin-bottom:0.5rem;background:var(--surface-2)">
+                    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem">
+                        <span class="sq-avatar" style="width:32px;height:32px;font-size:0.8rem">
+                            {{ agent.username|first|upper }}
+                        </span>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                                {{ agent.get_full_name|default:agent.username }}
+                            </div>
+                            <div style="font-size:0.72rem;color:var(--text-muted)">
+                                {{ agent.open_count }} open · {{ agent.in_progress_count }} in progress
+                            </div>
+                        </div>
+                        <span class="pill {% if agent.ticket_count > 5 %}pill-high{% elif agent.ticket_count > 2 %}pill-medium{% else %}pill-resolved{% endif %}">
+                            {{ agent.ticket_count }}
+                        </span>
+                    </div>
+                    <!-- Workload bar -->
+                    <div style="height:4px;background:var(--surface-3);border-radius:2px;overflow:hidden">
+                        <div style="height:100%;background:var(--brand);border-radius:2px;width:{% if agent.ticket_count > 0 %}{% widthratio agent.ticket_count 10 100 %}{% else %}0{% endif %}%;transition:width 0.3s ease"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.875rem">
+                    No agents found
+                </div>
+                {% endfor %}
+            </div>
+            <div style="padding:0.75rem;border-top:1px solid var(--border)">
+                <a href="{% url 'tickets:team' %}" class="btn btn-outline-secondary w-100 btn-sm">
+                    <i class="bi bi-people me-1"></i>Manage Team
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

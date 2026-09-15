@@ -520,9 +520,15 @@
                 <i class="bi bi-ticket"></i> Tickets
                 <span class="sq-nav-badge">{{ user.tickets.count }}</span>
             </a>
-            {% if user.is_staff %}
+            {% if user.is_staff or user.is_superuser %}
+            <a href="{% url 'tickets:team' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'team' %}active{% endif %}">
+                <i class="bi bi-people"></i> Team
+            </a>
+            <a href="{% url 'tickets:customers' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'customers' %}active{% endif %}">
+                <i class="bi bi-person-lines-fill"></i> Customers
+            </a>
             <a href="/admin/" class="sq-nav-item">
-                <i class="bi bi-shield-check"></i> Admin
+                <i class="bi bi-shield-check"></i> Admin Panel
             </a>
             {% endif %}
         </div>
@@ -561,6 +567,11 @@
                             <i class="bi bi-person me-2"></i>Profile
                         </a>
                     </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'accounts:settings' %}">
+                            <i class="bi bi-gear me-2"></i>Settings
+                        </a>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form method="POST" action="{% url 'accounts:logout' %}">
@@ -591,7 +602,6 @@
                 <a href="{% url 'tickets:ticket_create' %}" class="sq-topbar-icon-btn" title="New Ticket">
                     <i class="bi bi-plus"></i>
                 </a>
-                <!-- Theme Toggle -->
                 <div class="sq-topbar-icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
                     <i class="bi bi-sun" id="theme-icon"></i>
                 </div>
