@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block content %}
+
+<div style="max-width:680px;margin:0 auto">
+
+    <div style="margin-bottom:1.5rem">
+        <h2 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem">Settings</h2>
+        <p style="font-size:0.875rem;color:var(--text-muted);margin:0">Manage your account preferences.</p>
+    </div>
+
+    <!-- Appearance -->
+    <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1rem">
+        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
+            <i class="bi bi-palette me-2" style="color:var(--brand)"></i>Appearance
+        </div>
+        <div style="padding:1.25rem">
+
+            <!-- Theme Toggle -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0;border-bottom:1px solid var(--border)">
+                <div>
+                    <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Theme</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">Switch between dark and light mode</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem">
+                    <span id="theme-label" style="font-size:0.78rem;color:var(--text-muted)">Dark</span>
+                    <div onclick="toggleTheme()" id="theme-switch"
+                        style="width:44px;height:24px;border-radius:999px;background:var(--surface-3);border:1px solid var(--border);cursor:pointer;position:relative;transition:background 0.2s ease">
+                        <div id="theme-knob"
+                            style="width:18px;height:18px;border-radius:50%;background:var(--text-muted);position:absolute;top:2px;left:2px;transition:transform 0.2s ease,background 0.2s ease">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accent color -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0">
+                <div>
+                    <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Accent color</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">SupportIQ brand color</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                    <div style="width:24px;height:24px;border-radius:50%;background:#FF5500;border:2px solid white;box-shadow:0 0 0 2px #FF5500"></div>
+                    <span style="font-size:0.78rem;color:var(--text-muted)">#FF5500</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Account -->
+    <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1rem">
+        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
+            <i class="bi bi-person me-2" style="color:var(--brand)"></i>Account
+        </div>
+        <div style="padding:1.25rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0;border-bottom:1px solid var(--border)">
+                <div>
+                    <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Profile</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">View and edit your account details</div>
+                </div>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-right me-1"></i>View Profile
+                </a>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0">
+                <div>
+                    <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Sign out</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">Sign out of your SupportIQ account</div>
+                </div>
+                <form method="POST" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-box-arrow-right me-1"></i>Sign out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Info -->
+    <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden">
+        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
+            <i class="bi bi-info-circle me-2" style="color:var(--brand)"></i>System
+        </div>
+        <div style="padding:1.25rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.82rem;color:var(--text-muted)">Version</span>
+                <span style="font-size:0.82rem;font-weight:500">SupportIQ v1.0</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.82rem;color:var(--text-muted)">Role</span>
+                <span class="pill {% if user.is_superuser %}pill-critical{% elif user.role == 'agent' %}pill-resolved{% else %}pill-open{% endif %}">
+                    {% if user.is_superuser %}Admin{% elif user.role == 'agent' %}Agent{% else %}Customer{% endif %}
+                </span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:0.82rem;color:var(--text-muted)">Security</span>
+                <span style="font-size:0.82rem;color:#4ade80"><i class="bi bi-shield-check me-1"></i>49 automated tests</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+                <span style="font-size:0.82rem;color:var(--text-muted)">Infrastructure</span>
+                <span style="font-size:0.82rem;font-weight:500">Railway Cloud</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function syncToggle() {
+        const isLight = document.body.classList.contains('light-mode');
+        const knob = document.getElementById('theme-knob');
+        const label = document.getElementById('theme-label');
+        const sw = document.getElementById('theme-switch');
+        if (isLight) {
+            knob.style.transform = 'translateX(20px)';
+            knob.style.background = '#FF5500';
+            sw.style.background = 'rgba(255,85,0,0.2)';
+            sw.style.borderColor = 'rgba(255,85,0,0.4)';
+            label.textContent = 'Light';
+        } else {
+            knob.style.transform = 'translateX(0)';
+            knob.style.background = '#888888';
+            sw.style.background = 'var(--surface-3)';
+            sw.style.borderColor = 'var(--border)';
+            label.textContent = 'Dark';
+        }
+    }
+
+    const _origToggle = window.toggleTheme;
+    window.toggleTheme = function() {
+        _origToggle();
+        syncToggle();
+    };
+
+    syncToggle();
+</script>
+
+{% endblock %}
