@@ -1,7 +1,6 @@
 import hashlib
 import hmac
 import time
-import json
 import logging
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -28,7 +27,6 @@ def dashboard(request):
     user = request.user
 
     if user.is_superuser or user.is_staff:
-        # Admin dashboard
         all_tickets = Ticket.objects.select_related('owner', 'assigned_to').all()
         total_count = all_tickets.count()
         open_count = all_tickets.filter(status='open').count()
@@ -36,14 +34,12 @@ def dashboard(request):
         resolved_count = all_tickets.filter(status='resolved').count()
         unassigned_count = all_tickets.filter(assigned_to=None, status__in=['open', 'in_progress']).count()
 
-        # Agent workload
         agents = User.objects.filter(
             Q(role='agent') | Q(is_staff=True)
         ).annotate(
             ticket_count=Count('assigned_tickets', filter=Q(assigned_tickets__status__in=['open', 'in_progress']))
         ).order_by('-ticket_count')
 
-        # At risk tickets (open for more than 24 hours)
         from django.utils import timezone
         from datetime import timedelta
         at_risk = all_tickets.filter(
@@ -51,13 +47,11 @@ def dashboard(request):
             created_at__lt=timezone.now() - timedelta(hours=24)
         ).order_by('created_at')[:5]
 
-        # Unassigned tickets
         unassigned_tickets = all_tickets.filter(
             assigned_to=None,
             status__in=['open', 'in_progress']
         ).order_by('created_at')[:10]
 
-        # Recent tickets
         recent_tickets = all_tickets.order_by('-created_at')[:10]
 
         return render(request, 'tickets/admin_dashboard.html', {
@@ -72,10 +66,8 @@ def dashboard(request):
             'recent_tickets': recent_tickets,
         })
 
-    elif user.role == 'agent':
-        # Agent dashboard
+    elif hasattr(user, 'role') and user.role == 'agent':
         tickets = Ticket.objects.select_related('owner', 'assigned_to').all()
-        my_tickets = tickets.filter(assigned_to=user)
         total_count = tickets.count()
         open_count = tickets.filter(status='open').count()
         in_progress_count = tickets.filter(status='in_progress').count()
@@ -94,7 +86,6 @@ def dashboard(request):
         })
 
     else:
-        # Customer dashboard
         tickets = Ticket.objects.filter(owner=user).select_related('owner', 'assigned_to')
         total_count = tickets.count()
         open_count = tickets.filter(status='open').count()
