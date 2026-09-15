@@ -27,7 +27,6 @@ class Ticket(models.Model):
         ('other', 'Other'),
     ]
 
-    # Ownership — ForeignKey uses ORM, never raw SQL
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -55,7 +54,6 @@ class Ticket(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
-        # Sanitize before every save — XSS protection at the model level
         self.title = bleach.clean(self.title, tags=[], strip=True)
         self.description = bleach.clean(
             self.description,
@@ -85,15 +83,14 @@ class TicketComment(models.Model):
         ordering = ['created_at']
 
     def save(self, *args, **kwargs):
-        # Sanitize comment body — strip all HTML from comments
         self.body = bleach.clean(self.body, tags=[], strip=True)
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Comment by {self.author.username} on Ticket #{self.ticket.id}"
 
+
 class InboundEmail(models.Model):
-    """Tracks emails received from customers via Mailgun webhook."""
     sender = models.EmailField()
     subject = models.CharField(max_length=255)
     body = models.TextField()
@@ -109,4 +106,35 @@ class InboundEmail(models.Model):
 
     def __str__(self):
         return f"Email from {self.sender}: {self.subject}"
-# Create your models here.
+
+
+class SupportSettings(models.Model):
+    """
+    Singleton model for support system settings.
+    Only one row should exist — use SupportSettings.get() to access.
+    """
+    auto_reply_enabled = models.BooleanField(
+        default=False,
+        help_text="When ON, AI automatically replies to new tickets. When OFF, agents reply manually."
+    )
+    auto_reply_changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='settings_changes'
+    )
+    auto_reply_changed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Support Settings'
+        verbose_name_plural = 'Support Settings'
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return f"Support Settings (auto_reply={'ON' if self.auto_reply_enabled else 'OFF'})"
