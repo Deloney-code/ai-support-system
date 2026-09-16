@@ -24,8 +24,8 @@
                 <div>
                     <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Auto-Reply Mode</div>
                     <div style="font-size:0.78rem;color:var(--text-muted)">
-                        When ON — AI automatically replies to new tickets.<br>
-                        When OFF — agents reply manually during working hours.
+                        When ON, AI automatically replies to new tickets.<br>
+                        When OFF, agents reply manually during working hours.
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;margin-left:1rem">
@@ -46,9 +46,9 @@
                 <div style="font-size:0.78rem;color:var(--text-muted)">
                     <i class="bi bi-info-circle me-1"></i>
                     {% if auto_reply_enabled %}
-                    <span style="color:#4ade80">AI auto-reply is <strong>ON</strong> — AI will reply to new tickets automatically.</span>
+                    <span style="color:#4ade80">AI auto-reply is <strong>ON</strong>. AI will reply to new tickets automatically.</span>
                     {% else %}
-                    <span style="color:#fbbf24">AI auto-reply is <strong>OFF</strong> — agents will handle replies manually.</span>
+                    <span style="color:#fbbf24">AI auto-reply is <strong>OFF</strong>. Agents will handle replies manually.</span>
                     {% endif %}
                     {% if auto_reply_changed_at %}
                     <span class="ms-2" style="color:var(--text-subtle)">Last changed {{ auto_reply_changed_at|date:"M d, Y H:i" }}</span>
