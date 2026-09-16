@@ -15,12 +15,12 @@ ALLOWED_HOSTS = [
     '.up.railway.app',
 ]
 
-# Add any custom domain here when connected
 CUSTOM_DOMAIN = os.environ.get('CUSTOM_DOMAIN', '')
 if CUSTOM_DOMAIN:
     ALLOWED_HOSTS.append(CUSTOM_DOMAIN)
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'daphne',
     'django_celery_results',
     'django_ratelimit',
     'accounts',
