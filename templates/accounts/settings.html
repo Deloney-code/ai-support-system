@@ -66,7 +66,6 @@
         </div>
         <div style="padding:1.25rem">
 
-            <!-- Theme Toggle -->
             <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0;border-bottom:1px solid var(--border)">
                 <div>
                     <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Theme</div>
@@ -83,7 +82,6 @@
                 </div>
             </div>
 
-            <!-- Accent color -->
             <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0">
                 <div>
                     <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Accent color</div>
@@ -191,26 +189,43 @@
         const label = document.getElementById('auto-reply-label');
         const sw = document.getElementById('auto-reply-switch');
 
-        const res = await fetch('/tickets/settings/auto-reply/', {
-            method: 'POST',
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        });
-        const data = await res.json();
+        try {
+            const csrfToken = document.cookie.split(';')
+                .find(c => c.trim().startsWith('csrftoken='))
+                ?.split('=')[1];
 
-        if (data.enabled) {
-            knob.style.transform = 'translateX(20px)';
-            knob.style.background = '#FF5500';
-            sw.style.background = 'rgba(255,85,0,0.2)';
-            sw.style.borderColor = 'rgba(255,85,0,0.4)';
-            label.textContent = 'ON';
-            label.style.color = '#4ade80';
-        } else {
-            knob.style.transform = 'translateX(0)';
-            knob.style.background = '#888888';
-            sw.style.background = 'var(--surface-3)';
-            sw.style.borderColor = 'var(--border)';
-            label.textContent = 'OFF';
-            label.style.color = 'var(--text-muted)';
+            const res = await fetch('/tickets/settings/auto-reply/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!res.ok) {
+                console.error('Toggle failed:', res.status);
+                return;
+            }
+
+            const data = await res.json();
+
+            if (data.enabled) {
+                knob.style.transform = 'translateX(20px)';
+                knob.style.background = '#FF5500';
+                sw.style.background = 'rgba(255,85,0,0.2)';
+                sw.style.borderColor = 'rgba(255,85,0,0.4)';
+                label.textContent = 'ON';
+                label.style.color = '#4ade80';
+            } else {
+                knob.style.transform = 'translateX(0)';
+                knob.style.background = '#888888';
+                sw.style.background = 'var(--surface-3)';
+                sw.style.borderColor = 'var(--border)';
+                label.textContent = 'OFF';
+                label.style.color = 'var(--text-muted)';
+            }
+        } catch(err) {
+            console.error('Toggle error:', err);
         }
     }
 </script>
