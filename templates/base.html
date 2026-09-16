@@ -506,9 +506,15 @@
                 <span class="sq-logo">S</span>
                 SupportIQ
             </a>
+            {% if not user.is_superuser and not user.is_staff %}
             <a href="{% url 'tickets:ticket_create' %}" class="sq-new-ticket-btn">
                 <i class="bi bi-plus"></i> New ticket
             </a>
+            {% else %}
+            <a href="{% url 'tickets:dashboard' %}" class="sq-new-ticket-btn" style="background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)">
+                <i class="bi bi-grid-1x2"></i> Admin Dashboard
+            </a>
+            {% endif %}
         </div>
 
         <div class="sq-sidebar-section">
@@ -599,9 +605,11 @@
                     <i class="bi bi-search" style="font-size:0.8rem"></i>
                     <span>Search...</span>
                 </div>
+                {% if not user.is_superuser and not user.is_staff %}
                 <a href="{% url 'tickets:ticket_create' %}" class="sq-topbar-icon-btn" title="New Ticket">
                     <i class="bi bi-plus"></i>
                 </a>
+                {% endif %}
                 <div class="sq-topbar-icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
                     <i class="bi bi-sun" id="theme-icon"></i>
                 </div>
