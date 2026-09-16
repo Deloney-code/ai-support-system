@@ -138,33 +138,3 @@ class SupportSettings(models.Model):
 
     def __str__(self):
         return f"Support Settings (auto_reply={'ON' if self.auto_reply_enabled else 'OFF'})"
-        class SupportSettings(models.Model):
-    """
-    Singleton model for support system settings.
-    Only one row should exist — use SupportSettings.get() to access.
-    """
-    auto_reply_enabled = models.BooleanField(
-        default=False,
-        help_text="When ON, AI automatically replies to new tickets. When OFF, agents reply manually."
-    )
-    auto_reply_changed_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='settings_changes'
-    )
-    auto_reply_changed_at = models.DateTimeField(null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = 'Support Settings'
-        verbose_name_plural = 'Support Settings'
-
-    @classmethod
-    def get(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
-        return obj
-
-    def __str__(self):
-        return f"Support Settings (auto_reply={'ON' if self.auto_reply_enabled else 'OFF'})"
