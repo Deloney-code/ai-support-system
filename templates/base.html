@@ -31,7 +31,6 @@
             --sidebar-width: 220px;
         }
 
-        /* Light mode */
         body.light-mode {
             --bg: #f5f5f5;
             --surface: #ffffff;
@@ -517,16 +516,17 @@
             {% endif %}
         </div>
 
+        {% if user.is_staff or user.is_superuser %}
+        <!-- Admin Navigation -->
         <div class="sq-sidebar-section">
             <div class="sq-sidebar-label">Workspace</div>
             <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                 <i class="bi bi-grid-1x2"></i> Overview
             </a>
             <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
-                <i class="bi bi-ticket"></i> Tickets
+                <i class="bi bi-ticket"></i> All Tickets
                 <span class="sq-nav-badge">{{ user.tickets.count }}</span>
             </a>
-            {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'tickets:team' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'team' %}active{% endif %}">
                 <i class="bi bi-people"></i> Team
             </a>
@@ -536,18 +536,55 @@
             <a href="/admin/" class="sq-nav-item">
                 <i class="bi bi-shield-check"></i> Admin Panel
             </a>
-            {% endif %}
         </div>
 
+        {% elif user.role == 'agent' %}
+        <!-- Agent Navigation -->
+        <div class="sq-sidebar-section">
+            <div class="sq-sidebar-label">Workspace</div>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2"></i> Overview
+            </a>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
+                <i class="bi bi-ticket"></i> All Tickets
+                <span class="sq-nav-badge">{{ user.tickets.count }}</span>
+            </a>
+        </div>
         <div class="sq-sidebar-section">
             <div class="sq-sidebar-label">Views</div>
             <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
-                <i class="bi bi-person"></i> Assigned to me
+                <i class="bi bi-person-check"></i> Assigned to me
             </a>
             <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item">
                 <i class="bi bi-collection"></i> All open
             </a>
         </div>
+
+        {% else %}
+        <!-- Customer Navigation -->
+        <div class="sq-sidebar-section">
+            <div class="sq-sidebar-label">My Support</div>
+            <a href="{% url 'tickets:dashboard' %}" class="sq-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-ticket"></i> My Tickets
+                <span class="sq-nav-badge">{{ user.tickets.count }}</span>
+            </a>
+            <a href="{% url 'tickets:dashboard' %}?status=open" class="sq-nav-item">
+                <i class="bi bi-circle"></i> Open
+            </a>
+            <a href="{% url 'tickets:dashboard' %}?status=resolved" class="sq-nav-item">
+                <i class="bi bi-check-circle"></i> Resolved
+            </a>
+        </div>
+        <div class="sq-sidebar-section">
+            <div class="sq-sidebar-label">Resources</div>
+            <a href="{% url 'tickets:ticket_create' %}" class="sq-nav-item">
+                <i class="bi bi-plus-circle"></i> New Ticket
+            </a>
+            <a href="mailto:support@mg.simedelonney.com" class="sq-nav-item">
+                <i class="bi bi-envelope"></i> Contact Support
+            </a>
+        </div>
+        {% endif %}
 
         <div class="sq-sidebar-bottom">
             <a href="{% url 'accounts:settings' %}" class="sq-nav-item mb-1 {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
@@ -660,7 +697,6 @@
         </div>
         {% endif %}
 
-        <!-- THIS IS THE ONLY BLOCK CONTENT -->
         <div class="sq-content">
             {% block content %}{% endblock %}
         </div>
@@ -669,7 +705,6 @@
 
     {% else %}
 
-    <!-- Not authenticated -->
     <div style="flex:1">
         {% if messages %}
         <div style="padding:1rem">
