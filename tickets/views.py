@@ -289,6 +289,27 @@ def ai_auto_resolve(request, pk):
     return JsonResponse(result)
 
 
+@login_required
+@require_POST
+def toggle_auto_reply(request):
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+
+    from .models import SupportSettings
+    from django.utils import timezone
+
+    support_settings = SupportSettings.get()
+    support_settings.auto_reply_enabled = not support_settings.auto_reply_enabled
+    support_settings.auto_reply_changed_by = request.user
+    support_settings.auto_reply_changed_at = timezone.now()
+    support_settings.save()
+
+    return JsonResponse({
+        'enabled': support_settings.auto_reply_enabled,
+        'message': f"Auto-reply {'enabled' if support_settings.auto_reply_enabled else 'disabled'}"
+    })
+
+
 @csrf_exempt
 def mailgun_webhook(request):
     if request.method != 'POST':
