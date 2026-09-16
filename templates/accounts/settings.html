@@ -13,6 +13,52 @@
         <p style="font-size:0.875rem;color:var(--text-muted);margin:0">Manage your account preferences.</p>
     </div>
 
+    <!-- AI Auto-Reply — Admin only -->
+    {% if user.is_staff or user.is_superuser %}
+    <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1rem">
+        <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
+            <i class="bi bi-robot me-2" style="color:var(--brand)"></i>AI Auto-Reply
+        </div>
+        <div style="padding:1.25rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.875rem 0;border-bottom:1px solid var(--border)">
+                <div>
+                    <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.2rem">Auto-Reply Mode</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted)">
+                        When ON — AI automatically replies to new tickets.<br>
+                        When OFF — agents reply manually during working hours.
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;margin-left:1rem">
+                    <span id="auto-reply-label" style="font-size:0.78rem;font-weight:600;color:{% if auto_reply_enabled %}#4ade80{% else %}var(--text-muted){% endif %}">
+                        {% if auto_reply_enabled %}ON{% else %}OFF{% endif %}
+                    </span>
+                    <div onclick="toggleAutoReply()" id="auto-reply-switch"
+                        style="width:44px;height:24px;border-radius:999px;cursor:pointer;position:relative;transition:background 0.2s ease;
+                        {% if auto_reply_enabled %}background:rgba(255,85,0,0.2);border:1px solid rgba(255,85,0,0.4){% else %}background:var(--surface-3);border:1px solid var(--border){% endif %}">
+                        <div id="auto-reply-knob"
+                            style="width:18px;height:18px;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform 0.2s ease,background 0.2s ease;
+                            {% if auto_reply_enabled %}transform:translateX(20px);background:#FF5500{% else %}transform:translateX(0);background:#888888{% endif %}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:0.875rem 0">
+                <div style="font-size:0.78rem;color:var(--text-muted)">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {% if auto_reply_enabled %}
+                    <span style="color:#4ade80">AI auto-reply is <strong>ON</strong> — AI will reply to new tickets automatically.</span>
+                    {% else %}
+                    <span style="color:#fbbf24">AI auto-reply is <strong>OFF</strong> — agents will handle replies manually.</span>
+                    {% endif %}
+                    {% if auto_reply_changed_at %}
+                    <span class="ms-2" style="color:var(--text-subtle)">Last changed {{ auto_reply_changed_at|date:"M d, Y H:i" }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Appearance -->
     <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;margin-bottom:1rem">
         <div style="padding:0.875rem 1.25rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:600;color:var(--text-muted)">
@@ -139,6 +185,34 @@
     };
 
     syncToggle();
+
+    async function toggleAutoReply() {
+        const knob = document.getElementById('auto-reply-knob');
+        const label = document.getElementById('auto-reply-label');
+        const sw = document.getElementById('auto-reply-switch');
+
+        const res = await fetch('/tickets/settings/auto-reply/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        const data = await res.json();
+
+        if (data.enabled) {
+            knob.style.transform = 'translateX(20px)';
+            knob.style.background = '#FF5500';
+            sw.style.background = 'rgba(255,85,0,0.2)';
+            sw.style.borderColor = 'rgba(255,85,0,0.4)';
+            label.textContent = 'ON';
+            label.style.color = '#4ade80';
+        } else {
+            knob.style.transform = 'translateX(0)';
+            knob.style.background = '#888888';
+            sw.style.background = 'var(--surface-3)';
+            sw.style.borderColor = 'var(--border)';
+            label.textContent = 'OFF';
+            label.style.color = 'var(--text-muted)';
+        }
+    }
 </script>
 
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
@@ -68,4 +68,10 @@ def profile_view(request):
 
 @login_required
 def settings_view(request):
-    return render(request, 'accounts/settings.html', {'user': request.user})
+    from tickets.models import SupportSettings
+    support_settings = SupportSettings.get()
+    return render(request, 'accounts/settings.html', {
+        'user': request.user,
+        'auto_reply_enabled': support_settings.auto_reply_enabled,
+        'auto_reply_changed_at': support_settings.auto_reply_changed_at,
+    })
